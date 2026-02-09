@@ -8,68 +8,68 @@
 ## Phase 1: 기반 구축
 
 ### 1.1 개발 환경 설정
-- [O] Homebrew 설치 확인
-- [O] rbenv + ruby-build 설치
-- [O] Ruby 3.3.x 설치 및 글로벌 설정
-- [O] Node.js 설치 (Tailwind 빌드용)
-- [O] Rails 8.0 설치
-- [ ] Git 저장소 초기화
+- [x] Homebrew 설치 확인
+- [x] rbenv + ruby-build 설치
+- [x] Ruby 3.3.x 설치 및 글로벌 설정
+- [x] Node.js 설치 (Tailwind 빌드용)
+- [x] Rails 8.0 설치
+- [x] Git 저장소 초기화
 
 ### 1.2 Rails 프로젝트 생성
-- [ ] `rails new gnt_pop --css=tailwind --skip-jbuilder` 실행
-- [ ] 프로젝트 디렉토리 구조 확인
-- [ ] `.gitignore` 설정 확인
-- [ ] 초기 커밋 생성
+- [x] `rails new gnt_pop --css=tailwind --skip-jbuilder` 실행
+- [x] 프로젝트 디렉토리 구조 확인
+- [x] `.gitignore` 설정 확인
+- [x] 초기 커밋 생성
 
 ### 1.3 Gem 설치 및 설정
-- [ ] solid_queue 추가 및 설정
-- [ ] solid_cache 추가 및 설정
-- [ ] chartkick + groupdate 추가
-- [ ] prawn (PDF) 추가
-- [ ] barby + rqrcode (바코드) 추가
-- [ ] pagy (페이지네이션) 추가
-- [ ] ransack (검색) 추가
-- [ ] `bundle install` 완료
+- [x] solid_queue 추가 및 설정 (Rails 8 기본 포함)
+- [x] solid_cache 추가 및 설정 (Rails 8 기본 포함)
+- [x] chartkick + groupdate 추가
+- [x] prawn (PDF) 추가
+- [x] barby + rqrcode (바코드) 추가
+- [x] pagy (페이지네이션) 추가
+- [x] ransack (검색) 추가
+- [x] `bundle install` 완료
 
 ### 1.4 데이터베이스 설정
-- [ ] SQLite 설정 확인 (config/database.yml)
-- [ ] `rails db:create` 실행
-- [ ] 초기 마이그레이션 파일 생성
-- [ ] `rails db:migrate` 실행
+- [x] SQLite 설정 확인 (config/database.yml)
+- [x] `rails db:create` 실행
+- [x] 초기 마이그레이션 파일 생성
+- [x] `rails db:migrate` 실행
 
 ### 1.5 인증 시스템
-- [ ] `rails generate authentication` 실행
-- [ ] User 모델 확인
-- [ ] 로그인/로그아웃 기능 테스트
-- [ ] 세션 관리 확인
+- [x] `rails generate authentication` 실행
+- [x] User 모델 확인
+- [x] 로그인/로그아웃 기능 테스트
+- [x] 세션 관리 확인
 
 ### 1.6 메인 레이아웃 구현
-- [ ] application.html.erb 레이아웃 구성
-- [ ] 사이드바 네비게이션 (_sidebar.html.erb)
-- [ ] 헤더 영역 (로고, 사용자 정보)
-- [ ] 메인 콘텐츠 영역
-- [ ] 반응형 레이아웃 (모바일 대응)
+- [x] application.html.erb 레이아웃 구성
+- [x] 사이드바 네비게이션 (_sidebar.html.erb)
+- [x] 헤더 영역 (로고, 사용자 정보)
+- [x] 메인 콘텐츠 영역
+- [x] 반응형 레이아웃 (모바일 대응)
 
 ### 1.7 Tailwind CSS 테마
-- [ ] 지앤티 CI 색상 정의 (빨강 #E31837, 검정 #1A1A1A)
-- [ ] 커스텀 색상 팔레트 설정
-- [ ] 기본 버튼 스타일
-- [ ] 폼 요소 스타일
-- [ ] 테이블 스타일
-- [ ] 카드 컴포넌트 스타일
+- [x] 지앤티 CI 색상 정의 (빨강 #E31837, 검정 #1A1A1A)
+- [x] 커스텀 색상 팔레트 설정
+- [x] 기본 버튼 스타일
+- [x] 폼 요소 스타일
+- [x] 테이블 스타일
+- [x] 카드 컴포넌트 스타일
 
 ### 1.8 Hotwire 기본 설정
-- [ ] Turbo Drive 동작 확인
-- [ ] Turbo Frames 테스트
-- [ ] Turbo Streams 테스트
-- [ ] Stimulus 컨트롤러 기본 구조 생성
+- [x] Turbo Drive 동작 확인
+- [x] Turbo Frames 테스트
+- [x] Turbo Streams 테스트
+- [x] Stimulus 컨트롤러 기본 구조 생성
 
 ### 1.9 Phase 1 완료 확인
-- [ ] `bin/dev`로 개발 서버 실행
-- [ ] http://localhost:3000 접속 확인
-- [ ] 로그인 페이지 동작 확인
-- [ ] 사이드바 네비게이션 동작 확인
-- [ ] Git 커밋 및 태그 (v0.1.0-phase1)
+- [x] `bin/dev`로 개발 서버 실행
+- [x] http://localhost:3000 접속 확인
+- [x] 로그인 페이지 동작 확인
+- [x] 사이드바 네비게이션 동작 확인
+- [x] Git 커밋 및 태그 (v0.1.0-phase1)
 
 ---
 
@@ -222,11 +222,14 @@
 ## Phase 5: 대시보드 & 모니터링
 
 ### 5.1 메인 대시보드
-- [ ] DashboardController 생성
-- [ ] 오늘의 생산 현황 위젯
-- [ ] 불량률 위젯
-- [ ] 설비 상태 위젯
-- [ ] 최근 알림/이벤트 위젯
+- [x] DashboardController 생성
+- [x] 오늘의 생산 현황 위젯
+- [x] 불량률 위젯
+- [x] 설비 상태 위젯
+- [x] 최근 알림/이벤트 위젯
+- [x] 공정별 생산 현황 위젯
+- [x] 최근 생산실적 테이블
+- [x] 60-30-10 색상 비율 디자인 적용
 
 ### 5.2 실시간 생산현황
 - [ ] 라인별 생산 현황 표시
@@ -289,7 +292,7 @@
 - [ ] 데이터베이스 백업 스크립트
 
 ### 문서화
-- [ ] README.md 작성
+- [x] README.md 작성
 - [ ] 사용자 매뉴얼 작성
 - [ ] 관리자 가이드 작성
 
@@ -305,11 +308,11 @@
 
 | Phase | 상태 | 시작일 | 완료일 | 비고 |
 |-------|------|--------|--------|------|
-| Phase 1: 기반 구축 | ⬜ 대기 | - | - | |
+| Phase 1: 기반 구축 | ✅ 완료 | 2026-02-09 | 2026-02-09 | v0.1.0-phase1 |
 | Phase 2: 기준정보 | ⬜ 대기 | - | - | |
 | Phase 3: 생산관리 | ⬜ 대기 | - | - | |
 | Phase 4: 품질관리 | ⬜ 대기 | - | - | |
-| Phase 5: 대시보드 | ⬜ 대기 | - | - | |
+| Phase 5: 대시보드 | 🔄 진행중 | 2026-02-09 | - | 메인 대시보드 UI 완료, 60-30-10 디자인 적용 |
 | MVP 최종 검증 | ⬜ 대기 | - | - | |
 
 **상태 범례**: ⬜ 대기 | 🔄 진행중 | ✅ 완료
@@ -317,4 +320,5 @@
 ---
 
 > **문서 작성일**: 2026-02-09
+> **최종 수정일**: 2026-02-09
 > **작성**: 신호테크놀로지 × Claude AI
