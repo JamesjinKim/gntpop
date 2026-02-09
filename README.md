@@ -75,13 +75,12 @@ bin/rails server
 
 ## 로그인 정보
 
-### 개발자 계정
-- Email: drjins@gmail.com
-- Password: #1234
+초기 계정 정보는 `db/seeds.rb` 파일을 참조하거나, 관리자에게 문의하세요.
 
-### 관리자 계정 (개발 환경 전용)
-- Email: admin@gnt.co.kr
-- Password: password123
+```bash
+# 초기 사용자 생성
+bin/rails db:seed
+```
 
 ## 프로젝트 구조
 
