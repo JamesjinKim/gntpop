@@ -12,134 +12,150 @@
 @layer components {
   /* 기본 버튼 */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    transition: all 0.2s;
+  }
+
+  .btn:focus {
+    outline: none;
+    ring: 2px;
+    ring-offset: 2px;
   }
 
   /* 주요 버튼 (빨간색) */
   .btn-primary {
-    @apply btn bg-gnt-red text-white hover:bg-gnt-dark-red focus:ring-gnt-red;
+    background-color: var(--color-gnt-red);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-gnt-dark-red);
   }
 
   /* 보조 버튼 (검은색) */
   .btn-secondary {
-    @apply btn bg-gnt-black text-white hover:bg-gray-800 focus:ring-gray-500;
+    background-color: var(--color-gnt-black);
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #374151;
   }
 
   /* 아웃라인 버튼 */
   .btn-outline {
-    @apply btn bg-white text-gnt-black border-gray-300 hover:bg-gray-50 focus:ring-gnt-red;
+    background-color: white;
+    color: var(--color-gnt-black);
+    border-color: #d1d5db;
   }
 
-  /* 위험 버튼 */
-  .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
-  }
-
-  /* 성공 버튼 */
-  .btn-success {
-    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+  .btn-outline:hover {
+    background-color: #f9fafb;
   }
 
   /* 큰 버튼 (터치스크린용) */
   .btn-lg {
-    @apply px-6 py-3 text-base;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
   }
 
   /* 작은 버튼 */
   .btn-sm {
-    @apply px-3 py-1.5 text-xs;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
   }
 
   /* 폼 입력 필드 */
   .form-input {
-    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-gnt-red focus:ring-gnt-red sm:text-sm;
+    display: block;
+    width: 100%;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-gnt-red);
+    box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
   }
 
   /* 폼 라벨 */
   .form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
   }
 
   /* 폼 에러 메시지 */
   .form-error {
-    @apply text-sm text-red-600 mt-1;
+    font-size: 0.875rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
   }
 
   /* 카드 컴포넌트 */
   .card {
-    @apply bg-white overflow-hidden shadow-sm rounded-lg;
+    background-color: white;
+    overflow: hidden;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    border-radius: 0.5rem;
   }
 
   .card-header {
-    @apply px-4 py-5 border-b border-gray-200 sm:px-6;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
   }
 
   .card-body {
-    @apply px-4 py-5 sm:p-6;
+    padding: 1.25rem 1.5rem;
   }
 
   .card-footer {
-    @apply px-4 py-4 border-t border-gray-200 sm:px-6;
-  }
-
-  /* 테이블 스타일 */
-  .data-table {
-    @apply min-w-full divide-y divide-gray-200;
-  }
-
-  .data-table thead {
-    @apply bg-gray-50;
-  }
-
-  .data-table th {
-    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
-  }
-
-  .data-table tbody {
-    @apply bg-white divide-y divide-gray-200;
-  }
-
-  .data-table td {
-    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
-  }
-
-  .data-table tr:hover {
-    @apply bg-gray-50;
-  }
-
-  /* 상태 배지 */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-success {
-    @apply badge bg-green-100 text-green-800;
-  }
-
-  .badge-warning {
-    @apply badge bg-yellow-100 text-yellow-800;
-  }
-
-  .badge-danger {
-    @apply badge bg-red-100 text-red-800;
-  }
-
-  .badge-info {
-    @apply badge bg-blue-100 text-blue-800;
-  }
-
-  .badge-gray {
-    @apply badge bg-gray-100 text-gray-800;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
   }
 
   /* 페이지 제목 */
   .page-title {
-    @apply text-2xl font-bold text-gray-900;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
   }
 
   /* 숫자 키패드 (터치스크린용) */
   .numpad-btn {
-    @apply flex items-center justify-center h-16 w-full text-2xl font-bold rounded-lg bg-white border-2 border-gray-300 hover:bg-gray-100 active:bg-gray-200 transition-colors;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4rem;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
+    background-color: white;
+    border: 2px solid #d1d5db;
+    transition: all 0.15s;
+  }
+
+  .numpad-btn:hover {
+    background-color: #f3f4f6;
+  }
+
+  .numpad-btn:active {
+    background-color: #e5e7eb;
   }
 }
 
