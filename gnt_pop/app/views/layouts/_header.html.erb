@@ -1,0 +1,35 @@
+<!-- 상단 헤더 -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-gnt-black shadow-lg" data-controller="mobile-menu">
+  <div class="flex items-center justify-between h-16 px-4">
+    <!-- 로고 및 모바일 메뉴 버튼 -->
+    <div class="flex items-center">
+      <!-- 모바일 메뉴 토글 버튼 -->
+      <button type="button"
+              class="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              data-action="click->mobile-menu#toggle"
+              aria-expanded="false">
+        <span class="sr-only">메뉴 열기</span>
+        <!-- 햄버거 아이콘 -->
+        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- 로고 -->
+      <div class="flex items-center ml-2 lg:ml-0">
+        <span class="text-gnt-red font-bold text-2xl">GnT</span>
+        <span class="text-white font-semibold text-xl ml-2">POP System</span>
+      </div>
+    </div>
+
+    <!-- 사용자 정보 및 로그아웃 -->
+    <div class="flex items-center space-x-4">
+      <span class="text-gray-300 text-sm hidden sm:block">
+        <%= Current.user&.email_address %>
+      </span>
+      <%= button_to "로그아웃", session_path,
+                    method: :delete,
+                    class: "inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-gnt-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors" %>
+    </div>
+  </div>
+</header>

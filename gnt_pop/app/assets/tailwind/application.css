@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/* GnT CI 색상 정의 */
+@theme {
+  --color-gnt-red: #E31837;
+  --color-gnt-black: #1A1A1A;
+  --color-gnt-dark-red: #B8132C;
+  --color-gnt-light-red: #FF3D5A;
+}
+
+/* 기본 버튼 스타일 */
+@layer components {
+  /* 기본 버튼 */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    transition: all 0.2s;
+  }
+
+  .btn:focus {
+    outline: none;
+    ring: 2px;
+    ring-offset: 2px;
+  }
+
+  /* 주요 버튼 (빨간색) */
+  .btn-primary {
+    background-color: var(--color-gnt-red);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-gnt-dark-red);
+  }
+
+  /* 보조 버튼 (검은색) */
+  .btn-secondary {
+    background-color: var(--color-gnt-black);
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #374151;
+  }
+
+  /* 아웃라인 버튼 */
+  .btn-outline {
+    background-color: white;
+    color: var(--color-gnt-black);
+    border-color: #d1d5db;
+  }
+
+  .btn-outline:hover {
+    background-color: #f9fafb;
+  }
+
+  /* 큰 버튼 (터치스크린용) */
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* 작은 버튼 */
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  /* 폼 입력 필드 */
+  .form-input {
+    display: block;
+    width: 100%;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-gnt-red);
+    box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+  }
+
+  /* 폼 라벨 */
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+  }
+
+  /* 폼 에러 메시지 */
+  .form-error {
+    font-size: 0.875rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
+  }
+
+  /* 카드 컴포넌트 */
+  .card {
+    background-color: white;
+    overflow: hidden;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    border-radius: 0.5rem;
+  }
+
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* 페이지 제목 */
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  /* 숫자 키패드 (터치스크린용) */
+  .numpad-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4rem;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
+    background-color: white;
+    border: 2px solid #d1d5db;
+    transition: all 0.15s;
+  }
+
+  .numpad-btn:hover {
+    background-color: #f3f4f6;
+  }
+
+  .numpad-btn:active {
+    background-color: #e5e7eb;
+  }
+}
+
+/* 반응형 개선 */
+@layer utilities {
+  /* 터치 디바이스에서 더 큰 터치 영역 */
+  @media (pointer: coarse) {
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+}
