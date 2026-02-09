@@ -67,7 +67,7 @@ end
 
 gem "chartkick", "~> 5.2"
 gem "groupdate", "~> 6.7"
-gem "prawn", "~> 2.4"
+gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2.2"
 gem "barby", "~> 0.7.0"
 gem "rqrcode", "~> 3.2"
