@@ -18,7 +18,7 @@ gem "stimulus-rails"
 gem "tailwindcss-rails"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -64,3 +64,13 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "chartkick", "~> 5.2"
+gem "groupdate", "~> 6.7"
+gem "prawn", "~> 2.4"
+gem "prawn-table", "~> 0.2.2"
+gem "barby", "~> 0.7.0"
+gem "rqrcode", "~> 3.2"
+gem "chunky_png", "~> 1.4"
+gem "pagy", "~> 43.2"
+gem "ransack", "~> 4.4"
