@@ -1,0 +1,17 @@
+<%# 대시보드 페이지 헤더 %>
+<%# 제목, 실시간 표시기, 현재 날짜를 표시합니다 %>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">생산 현황 대시보드</h1>
+    <p class="mt-1 text-sm text-slate-500">실시간 생산 모니터링 및 KPI 현황</p>
+  </div>
+  <div class="mt-4 sm:mt-0 flex items-center space-x-3">
+    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+      <span class="w-2 h-2 mr-2 bg-emerald-500 rounded-full animate-pulse"></span>
+      실시간
+    </span>
+    <span class="text-sm font-medium text-slate-600 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">
+      <%= Date.today.strftime("%Y년 %m월 %d일 (%a)") %>
+    </span>
+  </div>
+</div>

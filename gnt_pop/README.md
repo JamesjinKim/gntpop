@@ -25,12 +25,17 @@ GnT POP는 컨버터, 변압기/인덕터, 전자부품, 회로기판 제조 현
 - Hotwire 기본 설정
 
 ### Phase 5: 대시보드 (부분 완료)
-- 메인 대시보드 UI
+- 메인 대시보드 UI (Partial 컴포넌트 분리)
 - KPI 요약 카드 (생산량, 불량률, 설비 가동률, 작업지시)
 - 공정별 생산 현황 모니터링
 - 설비 상태 모니터링
 - 최근 생산실적 테이블
 - 알림 및 이벤트 표시
+
+### 보안 및 품질
+- 8시간 세션 만료 (공장 근무 시간 기준)
+- 환경변수 기반 초기 사용자 설정
+- 컨트롤러/모델 테스트 코드 작성
 
 ## 설치 및 실행
 
@@ -75,12 +80,28 @@ bin/rails server
 
 ## 로그인 정보
 
-초기 계정 정보는 `db/seeds.rb` 파일을 참조하거나, 관리자에게 문의하세요.
+### 환경변수 설정 (권장)
 
 ```bash
+# 관리자 계정 설정
+export ADMIN_EMAIL="admin@example.com"
+export ADMIN_PASSWORD="secure_password"
+
+# 개발자 계정 설정 (개발 환경에서만)
+export DEV_EMAIL="developer@example.com"
+export DEV_PASSWORD="dev_password"
+
 # 초기 사용자 생성
 bin/rails db:seed
 ```
+
+### 기본값 (개발 환경)
+
+환경변수 미설정 시 개발 환경에서는 다음 기본값이 적용됩니다:
+- 관리자: `admin@gnt.co.kr` / `password123`
+- 개발자: `developer@gnt.co.kr` / `dev123456`
+
+> **주의**: 프로덕션 환경에서는 반드시 `ADMIN_PASSWORD` 환경변수를 설정해야 합니다.
 
 ## 프로젝트 구조
 
@@ -99,7 +120,13 @@ gnt_pop/
 │   │   └── session.rb
 │   └── views/
 │       ├── dashboard/
-│       │   └── index.html.erb     # 메인 대시보드
+│       │   ├── index.html.erb          # 메인 대시보드
+│       │   ├── _header.html.erb        # 페이지 헤더
+│       │   ├── _kpi_cards.html.erb     # KPI 카드 섹션
+│       │   ├── _process_status.html.erb  # 공정별 현황
+│       │   ├── _equipment_status.html.erb # 설비 상태
+│       │   ├── _recent_results.html.erb  # 최근 생산실적
+│       │   └── _notifications.html.erb   # 알림 섹션
 │       ├── layouts/
 │       │   ├── application.html.erb
 │       │   ├── _header.html.erb
@@ -138,7 +165,7 @@ gnt_pop/
 | Phase 2: 기준정보 | ⬜ 대기 | 제품, 공정, 설비, 작업자 마스터 |
 | Phase 3: 생산관리 | ⬜ 대기 | 작업지시, 생산실적, LOT 추적 |
 | Phase 4: 품질관리 | ⬜ 대기 | 검사, 불량관리, SPC |
-| Phase 5: 대시보드 | 🔄 진행중 | 메인 대시보드 UI 완료 |
+| Phase 5: 대시보드 | 🔄 진행중 | UI 완료, Partial 분리, 테스트 작성 |
 
 ## 라이선스
 
@@ -147,4 +174,5 @@ Copyright © 2026 (주)지앤티. All rights reserved.
 ---
 
 > **문서 작성일**: 2026-02-09
+> **최종 수정일**: 2026-02-10
 > **개발**: 신호테크놀로지 × Claude AI

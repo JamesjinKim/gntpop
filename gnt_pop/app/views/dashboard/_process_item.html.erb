@@ -1,0 +1,43 @@
+<%# 개별 공정 진행률 표시 컴포넌트 %>
+<%# process: { name:, progress:, target:, actual:, status: } %>
+<%
+  # 상태별 색상 클래스 결정
+  status_dot_class = case process[:status]
+    when "running" then "bg-emerald-500 animate-pulse"
+    when "completed" then "bg-sky-500"
+    else "bg-slate-300"
+  end
+
+  # 진행률별 색상 클래스 결정
+  progress_color = if process[:progress] >= 80
+    "text-emerald-600"
+  elsif process[:progress] >= 50
+    "text-amber-600"
+  else
+    "text-gnt-red"
+  end
+
+  # 진행률별 바 색상 클래스 결정
+  bar_color = if process[:progress] >= 80
+    "bg-gradient-to-r from-emerald-400 to-teal-500"
+  elsif process[:progress] >= 50
+    "bg-gradient-to-r from-amber-400 to-orange-400"
+  else
+    "bg-gradient-to-r from-gnt-red to-rose-400"
+  end
+%>
+<div class="group">
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center space-x-3">
+      <span class="w-2 h-2 rounded-full <%= status_dot_class %>"></span>
+      <span class="font-medium text-slate-700 text-sm"><%= process[:name] %></span>
+    </div>
+    <div class="flex items-center space-x-4 text-sm">
+      <span class="text-slate-400"><%= process[:actual] %> / <%= process[:target] %></span>
+      <span class="font-semibold w-12 text-right <%= progress_color %>"><%= process[:progress] %>%</span>
+    </div>
+  </div>
+  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+    <div class="h-2 rounded-full transition-all duration-500 <%= bar_color %>" style="width: <%= process[:progress] %>%"></div>
+  </div>
+</div>

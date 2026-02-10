@@ -1,0 +1,23 @@
+<%# 공정별 생산 현황 섹션 %>
+<%# 각 공정의 진행률과 목표 대비 실적을 표시합니다 %>
+<%# @processes: 컨트롤러에서 전달받은 공정 데이터 배열 %>
+<div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-semibold text-slate-800">공정별 생산 현황</h3>
+      <p class="text-sm text-slate-500"><%= @processes.size %>개 공정 실시간 모니터링</p>
+    </div>
+    <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
+      <button class="px-3 py-1.5 text-xs font-medium text-slate-500 rounded-md hover:bg-white hover:shadow-sm transition-all">일간</button>
+      <button class="px-3 py-1.5 text-xs font-medium text-white bg-slate-600 rounded-md shadow-sm">주간</button>
+      <button class="px-3 py-1.5 text-xs font-medium text-slate-500 rounded-md hover:bg-white hover:shadow-sm transition-all">월간</button>
+    </div>
+  </div>
+  <div class="p-6">
+    <div class="space-y-5">
+      <% @processes.each do |process| %>
+        <%= render "dashboard/process_item", process: process %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -38,10 +38,19 @@ module Authentication
       session.delete(:return_to_after_authenticating) || root_url
     end
 
+    # 세션 만료 시간 (8시간 - 공장 근무 시간 기준)
+    SESSION_EXPIRY = 8.hours
+
+    # 새 세션을 생성하고 쿠키에 저장합니다
     def start_new_session_for(user)
       user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
         Current.session = session
-        cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
+        cookies.signed[:session_id] = {
+          value: session.id,
+          expires: SESSION_EXPIRY.from_now,
+          httponly: true,
+          same_site: :lax
+        }
       end
     end
 

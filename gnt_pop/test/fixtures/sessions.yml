@@ -1,0 +1,10 @@
+# 테스트용 세션 픽스처
+one:
+  user: one
+  user_agent: "TestBrowser/1.0"
+  ip_address: "127.0.0.1"
+
+two:
+  user: two
+  user_agent: "TestBrowser/1.0"
+  ip_address: "127.0.0.1"

@@ -1,0 +1,17 @@
+<%# 알림 및 이벤트 섹션 %>
+<%# 시스템 알림 및 주요 이벤트를 표시합니다 %>
+<%# @notifications: 컨트롤러에서 전달받은 알림 배열 %>
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-semibold text-slate-800">알림 및 이벤트</h3>
+      <p class="text-sm text-slate-500">시스템 알림 및 주요 이벤트</p>
+    </div>
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gnt-red text-white"><%= @notifications.size %></span>
+  </div>
+  <div class="p-6 space-y-3">
+    <% @notifications.each do |notification| %>
+      <%= render "dashboard/notification_item", notification: notification %>
+    <% end %>
+  </div>
+</div>
