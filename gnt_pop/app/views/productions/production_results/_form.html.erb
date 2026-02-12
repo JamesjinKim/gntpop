@@ -1,0 +1,238 @@
+<%= form_with(model: production_result,
+              url: production_result.new_record? ? productions_production_results_path : productions_production_result_path(production_result),
+              local: true) do |f| %>
+  <!-- 에러 메시지 표시 -->
+  <% if production_result.errors.any? %>
+    <div class="mb-6 rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            <%= pluralize(production_result.errors.count, "개의 오류") %>가 발생했습니다
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc list-inside space-y-1">
+              <% production_result.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="space-y-6">
+    <!-- 작업지시 선택 -->
+    <div>
+      <%= f.label :work_order_id, "작업지시", class: "form-label" %>
+      <%= f.select :work_order_id,
+          options_from_collection_for_select(@work_orders, :id,
+            ->(wo) { "#{wo.work_order_code} - #{wo.product.product_name} (잔량: #{wo.order_qty - wo.total_good_qty})" },
+            production_result.work_order_id || params[:work_order_id]),
+          { prompt: "작업지시를 선택하세요" },
+          class: "form-input",
+          required: true %>
+      <% if production_result.errors[:work_order].any? %>
+        <p class="form-error"><%= production_result.errors[:work_order].first %></p>
+      <% end %>
+    </div>
+
+    <!-- 공정 선택 -->
+    <div>
+      <%= f.label :manufacturing_process_id, "공정", class: "form-label" %>
+      <%= f.select :manufacturing_process_id,
+          options_from_collection_for_select(@processes, :id,
+            ->(p) { "#{p.process_code} - #{p.process_name}" },
+            production_result.manufacturing_process_id),
+          { prompt: "공정을 선택하세요" },
+          class: "form-input",
+          required: true %>
+      <% if production_result.errors[:manufacturing_process].any? %>
+        <p class="form-error"><%= production_result.errors[:manufacturing_process].first %></p>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- 설비 선택 -->
+      <div>
+        <%= f.label :equipment_id, "설비 (선택)", class: "form-label" %>
+        <%= f.select :equipment_id,
+            options_from_collection_for_select(@equipments, :id,
+              ->(e) { "#{e.equipment_code} - #{e.equipment_name}" },
+              production_result.equipment_id),
+            { prompt: "설비를 선택하세요 (선택사항)" },
+            class: "form-input" %>
+      </div>
+
+      <!-- 작업자 선택 -->
+      <div>
+        <%= f.label :worker_id, "작업자 (선택)", class: "form-label" %>
+        <%= f.select :worker_id,
+            options_from_collection_for_select(@workers, :id,
+              ->(w) { "#{w.employee_number} - #{w.name}" },
+              production_result.worker_id),
+            { prompt: "작업자를 선택하세요 (선택사항)" },
+            class: "form-input" %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- 양품수량 -->
+      <div>
+        <%= f.label :good_qty, "양품수량", class: "form-label" %>
+        <%= f.number_field :good_qty,
+            placeholder: "예: 100",
+            class: "form-input",
+            min: 0,
+            required: true %>
+        <% if production_result.errors[:good_qty].any? %>
+          <p class="form-error"><%= production_result.errors[:good_qty].first %></p>
+        <% end %>
+      </div>
+
+      <!-- 불량수량 -->
+      <div>
+        <%= f.label :defect_qty, "불량수량", class: "form-label" %>
+        <%= f.number_field :defect_qty,
+            placeholder: "예: 5",
+            class: "form-input",
+            min: 0,
+            value: production_result.defect_qty || 0,
+            data: { action: "input->defect-form#toggleDefectRecords" } %>
+        <% if production_result.errors[:defect_qty].any? %>
+          <p class="form-error"><%= production_result.errors[:defect_qty].first %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- 작업 시작시간 -->
+      <div>
+        <%= f.label :start_time, "작업 시작시간", class: "form-label" %>
+        <%= f.datetime_local_field :start_time,
+            class: "form-input" %>
+      </div>
+
+      <!-- 작업 종료시간 -->
+      <div>
+        <%= f.label :end_time, "작업 종료시간", class: "form-label" %>
+        <%= f.datetime_local_field :end_time,
+            class: "form-input" %>
+      </div>
+    </div>
+
+    <!-- 불량 상세 입력 (불량수량이 0보다 클 때만 표시) -->
+    <div id="defect-records-section" class="<%= production_result.defect_qty.to_i > 0 ? '' : 'hidden' %>">
+      <div class="border-t pt-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">불량 상세 정보</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          불량수량이 0보다 크면 불량 유형별로 수량을 입력해주세요. (선택사항)
+        </p>
+
+        <div id="defect-records-container" class="space-y-4">
+          <!-- 불량 기록 1 -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border rounded-lg">
+            <div class="md:col-span-4">
+              <label class="form-label">불량코드</label>
+              <select name="defect_records[0][defect_code_id]" class="form-input">
+                <option value="">선택하세요</option>
+                <% @defect_codes.each do |code| %>
+                  <option value="<%= code.id %>"><%= code.code %> - <%= code.name %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">불량수량</label>
+              <input type="number" name="defect_records[0][defect_qty]"
+                     class="form-input" min="0" placeholder="0">
+            </div>
+            <div class="md:col-span-6">
+              <label class="form-label">비고</label>
+              <input type="text" name="defect_records[0][description]"
+                     class="form-input" placeholder="불량 상세 내용">
+            </div>
+          </div>
+
+          <!-- 불량 기록 2 -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border rounded-lg">
+            <div class="md:col-span-4">
+              <label class="form-label">불량코드</label>
+              <select name="defect_records[1][defect_code_id]" class="form-input">
+                <option value="">선택하세요</option>
+                <% @defect_codes.each do |code| %>
+                  <option value="<%= code.id %>"><%= code.code %> - <%= code.name %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">불량수량</label>
+              <input type="number" name="defect_records[1][defect_qty]"
+                     class="form-input" min="0" placeholder="0">
+            </div>
+            <div class="md:col-span-6">
+              <label class="form-label">비고</label>
+              <input type="text" name="defect_records[1][description]"
+                     class="form-input" placeholder="불량 상세 내용">
+            </div>
+          </div>
+
+          <!-- 불량 기록 3 -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border rounded-lg">
+            <div class="md:col-span-4">
+              <label class="form-label">불량코드</label>
+              <select name="defect_records[2][defect_code_id]" class="form-input">
+                <option value="">선택하세요</option>
+                <% @defect_codes.each do |code| %>
+                  <option value="<%= code.id %>"><%= code.code %> - <%= code.name %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">불량수량</label>
+              <input type="number" name="defect_records[2][defect_qty]"
+                     class="form-input" min="0" placeholder="0">
+            </div>
+            <div class="md:col-span-6">
+              <label class="form-label">비고</label>
+              <input type="text" name="defect_records[2][description]"
+                     class="form-input" placeholder="불량 상세 내용">
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-2">
+          * 필요한 불량 유형만 입력하시면 됩니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="flex justify-end space-x-3 pt-4">
+      <%= link_to "취소", productions_production_results_path, class: "btn btn-outline" %>
+      <%= f.submit production_result.new_record? ? "등록" : "수정", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  // 불량수량 입력에 따라 불량 상세 섹션 표시/숨김
+  document.addEventListener('turbo:load', function() {
+    const defectQtyInput = document.querySelector('[name="production_result[defect_qty]"]');
+    const defectRecordsSection = document.getElementById('defect-records-section');
+
+    if (defectQtyInput && defectRecordsSection) {
+      defectQtyInput.addEventListener('input', function() {
+        if (parseInt(this.value) > 0) {
+          defectRecordsSection.classList.remove('hidden');
+        } else {
+          defectRecordsSection.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script>

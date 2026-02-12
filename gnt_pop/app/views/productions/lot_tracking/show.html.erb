@@ -1,0 +1,221 @@
+<div class="max-w-4xl mx-auto">
+  <!-- 페이지 헤더 -->
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <div class="flex items-center text-sm text-gray-500 mb-1">
+        <%= link_to "LOT 추적", productions_lot_tracking_index_path, class: "hover:text-gnt-red" %>
+        <svg class="w-4 h-4 mx-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        <span class="font-mono"><%= @production_result.lot_no %></span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">LOT 상세 이력</h1>
+    </div>
+    <%= link_to productions_lot_tracking_index_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+      <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+      돌아가기
+    <% end %>
+  </div>
+
+  <% result = @production_result %>
+  <% work_order = result.work_order %>
+  <% product = work_order&.product %>
+
+  <!-- LOT 기본 정보 -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">LOT 기본 정보</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div>
+        <p class="text-xs text-gray-500 uppercase tracking-wider">LOT 번호</p>
+        <p class="mt-1 text-lg font-mono font-bold text-gnt-red"><%= result.lot_no %></p>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 uppercase tracking-wider">등록일시</p>
+        <p class="mt-1 text-lg font-medium text-gray-900"><%= result.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 uppercase tracking-wider">양품 / 불량</p>
+        <p class="mt-1 text-lg font-medium">
+          <span class="text-green-600"><%= number_with_delimiter(result.good_qty) %></span>
+          <span class="text-gray-400 mx-1">/</span>
+          <span class="<%= result.defect_qty.positive? ? 'text-red-600' : 'text-gray-500' %>"><%= number_with_delimiter(result.defect_qty) %></span>
+        </p>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 uppercase tracking-wider">불량률</p>
+        <p class="mt-1 text-lg font-medium <%= result.defect_rate > 5 ? 'text-red-600' : result.defect_rate > 2 ? 'text-yellow-600' : 'text-green-600' %>">
+          <%= result.defect_rate %>%
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- 작업지시 정보 -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">작업지시 정보</h2>
+      <dl class="space-y-3">
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">작업지시코드</dt>
+          <dd class="text-sm font-medium font-mono text-gray-900"><%= work_order&.work_order_code || "-" %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">제품코드</dt>
+          <dd class="text-sm font-medium text-gray-900"><%= product&.product_code || "-" %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">제품명</dt>
+          <dd class="text-sm font-medium text-gray-900"><%= product&.product_name || "-" %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">지시수량</dt>
+          <dd class="text-sm font-medium text-gray-900"><%= work_order ? number_with_delimiter(work_order.order_qty) : "-" %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">상태</dt>
+          <dd>
+            <% if work_order %>
+              <% status_colors = { "planned" => "bg-blue-100 text-blue-800", "in_progress" => "bg-yellow-100 text-yellow-800", "completed" => "bg-green-100 text-green-800", "cancelled" => "bg-gray-100 text-gray-800" } %>
+              <% status_labels = { "planned" => "계획", "in_progress" => "진행중", "completed" => "완료", "cancelled" => "취소" } %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_colors[work_order.status] %>">
+                <%= status_labels[work_order.status] %>
+              </span>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">계획일</dt>
+          <dd class="text-sm font-medium text-gray-900"><%= work_order&.plan_date&.strftime("%Y-%m-%d") || "-" %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- 공정/설비/작업자 -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">공정 / 설비 / 작업자</h2>
+      <dl class="space-y-3">
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">공정</dt>
+          <dd class="text-sm font-medium text-gray-900">
+            <% if result.manufacturing_process %>
+              [<%= result.manufacturing_process.process_code %>] <%= result.manufacturing_process.process_name %>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">설비</dt>
+          <dd class="text-sm font-medium text-gray-900">
+            <% if result.equipment %>
+              [<%= result.equipment.equipment_code %>] <%= result.equipment.equipment_name %>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+        <% if result.equipment&.location.present? %>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-500">설비 위치</dt>
+            <dd class="text-sm font-medium text-gray-900"><%= result.equipment.location %></dd>
+          </div>
+        <% end %>
+        <div class="flex justify-between">
+          <dt class="text-sm text-gray-500">작업자</dt>
+          <dd class="text-sm font-medium text-gray-900">
+            <% if result.worker %>
+              [<%= result.worker.employee_number %>] <%= result.worker.name %>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- 작업 시간 -->
+  <% if result.start_time.present? || result.end_time.present? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">작업 시간</h2>
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wider">시작</p>
+          <p class="mt-1 text-sm font-medium text-gray-900"><%= result.start_time&.strftime("%Y-%m-%d %H:%M") || "-" %></p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wider">종료</p>
+          <p class="mt-1 text-sm font-medium text-gray-900"><%= result.end_time&.strftime("%Y-%m-%d %H:%M") || "-" %></p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wider">소요 시간</p>
+          <p class="mt-1 text-sm font-medium text-gray-900">
+            <% if result.start_time && result.end_time %>
+              <% elapsed = result.end_time - result.start_time %>
+              <% hours = (elapsed / 3600).to_i %>
+              <% minutes = ((elapsed % 3600) / 60).to_i %>
+              <%= hours > 0 ? "#{hours}시간 " : "" %><%= minutes %>분
+            <% else %>
+              -
+            <% end %>
+          </p>
+        </div>
+      </div>
+
+      <% if result.start_time && result.end_time %>
+        <!-- 타임라인 바 -->
+        <div class="relative pt-2">
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+            <span><%= result.start_time.strftime("%H:%M") %></span>
+            <span><%= result.end_time.strftime("%H:%M") %></span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="bg-gnt-red h-2.5 rounded-full w-full"></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- 불량 기록 -->
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">불량 기록</h2>
+    </div>
+
+    <% if @defect_records.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">불량코드</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">불량유형</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">수량</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">설명</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @defect_records.each do |record| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-medium text-gray-900"><%= record.defect_code.code %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= record.defect_code.name %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 font-medium"><%= record.defect_qty %></td>
+                <td class="px-6 py-4 text-sm text-gray-500"><%= record.description || "-" %></td>
+              </tr>
+            <% end %>
+            <!-- 합계 행 -->
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-6 py-3 text-sm text-gray-900" colspan="2">합계</td>
+              <td class="px-6 py-3 text-sm text-right text-red-600"><%= @defect_records.sum(&:defect_qty) %></td>
+              <td class="px-6 py-3"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="px-6 py-8 text-center">
+        <p class="text-sm text-green-600 font-medium">불량 기록이 없습니다.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

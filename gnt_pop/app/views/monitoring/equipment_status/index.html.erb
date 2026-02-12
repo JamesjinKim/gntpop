@@ -1,0 +1,155 @@
+<% content_for(:title) { "설비상태 | GnT POP" } %>
+
+<div class="space-y-6">
+  <%# 페이지 헤더 %>
+  <h1 class="page-title">설비상태</h1>
+
+  <%= render "shared/flash_messages" %>
+
+  <%# 상태 요약 카드 4종 %>
+  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-5">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+        <span class="text-sm font-medium text-slate-600">가동</span>
+      </div>
+      <p class="mt-2 text-3xl font-bold text-slate-800"><%= @summary[:run] %><span class="text-sm font-normal text-slate-400 ml-1">대</span></p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
+        <span class="text-sm font-medium text-slate-600">대기</span>
+      </div>
+      <p class="mt-2 text-3xl font-bold text-slate-800"><%= @summary[:idle] %><span class="text-sm font-normal text-slate-400 ml-1">대</span></p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-red-200 p-5">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-sm font-medium text-slate-600">고장</span>
+      </div>
+      <p class="mt-2 text-3xl font-bold text-slate-800"><%= @summary[:down] %><span class="text-sm font-normal text-slate-400 ml-1">대</span></p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-5">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
+        <span class="text-sm font-medium text-slate-600">정비</span>
+      </div>
+      <p class="mt-2 text-3xl font-bold text-slate-800"><%= @summary[:pm] %><span class="text-sm font-normal text-slate-400 ml-1">대</span></p>
+    </div>
+  </div>
+
+  <%# 상태별 필터 탭 %>
+  <div class="flex flex-wrap gap-2">
+    <%
+      filters = [
+        { key: nil, label: "전체 (#{@summary[:total]})" },
+        { key: "run", label: "가동 (#{@summary[:run]})" },
+        { key: "idle", label: "대기 (#{@summary[:idle]})" },
+        { key: "down", label: "고장 (#{@summary[:down]})" },
+        { key: "pm", label: "정비 (#{@summary[:pm]})" }
+      ]
+    %>
+    <% filters.each do |filter| %>
+      <%
+        is_active = @current_filter == filter[:key]
+        tab_class = is_active ? "bg-gnt-red text-white" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-300"
+      %>
+      <%= link_to filter[:label],
+          monitoring_equipment_status_index_path(status: filter[:key]),
+          class: "inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors #{tab_class}" %>
+    <% end %>
+  </div>
+
+  <%# 설비 카드 그리드 %>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <% service = EquipmentStatusService.new %>
+    <% @equipments.each do |equipment| %>
+      <%
+        card_class = case equipment.status
+        when "run"  then "border-emerald-200 bg-emerald-50"
+        when "idle" then "border-slate-200 bg-slate-50"
+        when "down" then "border-red-200 bg-red-50"
+        when "pm"   then "border-amber-200 bg-amber-50"
+        else "border-slate-200 bg-slate-50"
+        end
+
+        badge_class = case equipment.status
+        when "run"  then "bg-emerald-100 text-emerald-800"
+        when "idle" then "bg-slate-100 text-slate-800"
+        when "down" then "bg-red-100 text-red-800"
+        when "pm"   then "bg-amber-100 text-amber-800"
+        else "bg-slate-100 text-slate-800"
+        end
+
+        dot_class = case equipment.status
+        when "run"  then "bg-emerald-500 animate-pulse"
+        when "idle" then "bg-slate-400"
+        when "down" then "bg-red-500 animate-pulse"
+        when "pm"   then "bg-amber-500"
+        else "bg-slate-400"
+        end
+
+        recent_lot = service.recent_lot(equipment)
+      %>
+      <div class="rounded-2xl border p-5 transition-shadow hover:shadow-md <%= card_class %>">
+        <%# 헤더: 설비코드 + 상태 배지 %>
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-mono text-slate-500"><%= equipment.equipment_code %></span>
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= badge_class %>">
+            <span class="w-1.5 h-1.5 rounded-full mr-1.5 <%= dot_class %>"></span>
+            <%= equipment.status_i18n %>
+          </span>
+        </div>
+
+        <%# 설비명 %>
+        <h3 class="text-base font-semibold text-slate-800 mb-3"><%= equipment.equipment_name %></h3>
+
+        <%# 상세 정보 %>
+        <div class="space-y-1.5 text-sm text-slate-600 mb-4">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">공정</span>
+            <span><%= equipment.manufacturing_process.process_name %></span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">위치</span>
+            <span><%= equipment.location || "-" %></span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">최근 LOT</span>
+            <span class="font-mono text-xs"><%= recent_lot || "-" %></span>
+          </div>
+        </div>
+
+        <%# 상태 변경 버튼 %>
+        <div class="flex flex-wrap gap-1.5 pt-3 border-t border-slate-200">
+          <% Equipment.statuses.keys.reject { |s| s == equipment.status }.each do |new_status| %>
+            <%
+              btn_class = case new_status
+              when "run"  then "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+              when "idle" then "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              when "down" then "bg-red-100 text-red-700 hover:bg-red-200"
+              when "pm"   then "bg-amber-100 text-amber-700 hover:bg-amber-200"
+              else "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              end
+
+              status_label = { "run" => "가동", "idle" => "대기", "down" => "고장", "pm" => "정비" }[new_status]
+            %>
+            <%= button_to status_label,
+                change_status_monitoring_equipment_status_path(equipment, status: new_status, filter: @current_filter),
+                method: :patch,
+                class: "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors #{btn_class}",
+                form: { data: { turbo_confirm: "#{equipment.equipment_name}을(를) '#{status_label}' 상태로 변경하시겠습니까?" } } %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @equipments.empty? %>
+    <div class="card">
+      <div class="card-body text-center py-12">
+        <p class="text-gray-500">해당 상태의 설비가 없습니다</p>
+      </div>
+    </div>
+  <% end %>
+</div>

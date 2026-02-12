@@ -1,0 +1,195 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex justify-between items-center">
+    <h1 class="page-title">작업지시 상세</h1>
+    <div class="space-x-2">
+      <%= link_to "목록", productions_work_orders_path, class: "btn btn-outline" %>
+      <% if @work_order.planned? %>
+        <%= link_to "수정", edit_productions_work_order_path(@work_order), class: "btn btn-secondary" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 기본 정보 카드 -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="text-lg font-semibold text-gray-900">기본 정보</h2>
+    </div>
+    <div class="card-body">
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <!-- 작업지시코드 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">작업지시코드</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold"><%= @work_order.work_order_code %></dd>
+        </div>
+
+        <!-- 상태 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">상태</dt>
+          <dd class="mt-1">
+            <%= render partial: "status_badge", locals: { status: @work_order.status } %>
+          </dd>
+        </div>
+
+        <!-- 제품명 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">제품</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @work_order.product.product_name %>
+            <span class="text-gray-500">(<%= @work_order.product.product_code %>)</span>
+          </dd>
+        </div>
+
+        <!-- 제품그룹 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">제품그룹</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= I18n.t("activerecord.attributes.product.product_groups.#{@work_order.product.product_group}") %>
+          </dd>
+        </div>
+
+        <!-- 지시수량 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">지시수량</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold">
+            <%= number_with_delimiter(@work_order.order_qty) %> 개
+          </dd>
+        </div>
+
+        <!-- 양품수량 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">양품수량</dt>
+          <dd class="mt-1 text-sm font-semibold" style="color: var(--color-gnt-red);">
+            <%= number_with_delimiter(@work_order.total_good_qty) %> 개
+          </dd>
+        </div>
+
+        <!-- 계획일 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">계획일</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= l(@work_order.plan_date, format: :long) %></dd>
+        </div>
+
+        <!-- 우선순위 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">우선순위</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @work_order.priority %></dd>
+        </div>
+
+        <!-- 진행률 -->
+        <div class="md:col-span-2">
+          <dt class="text-sm font-medium text-gray-500 mb-2">진행률</dt>
+          <dd class="mt-1">
+            <div class="flex items-center">
+              <div class="flex-1 bg-gray-200 rounded-full h-4 mr-4">
+                <div class="bg-blue-600 h-4 rounded-full flex items-center justify-center"
+                     style="width: <%= [@work_order.progress_rate, 100].min %>%">
+                  <span class="text-xs font-bold text-white"><%= @work_order.progress_rate %>%</span>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-gray-700 w-20">
+                <%= number_with_delimiter(@work_order.total_good_qty) %> / <%= number_with_delimiter(@work_order.order_qty) %>
+              </span>
+            </div>
+          </dd>
+        </div>
+
+        <!-- 등록일시 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">등록일시</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= l(@work_order.created_at, format: :long) %></dd>
+        </div>
+
+        <!-- 수정일시 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">수정일시</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= l(@work_order.updated_at, format: :long) %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- 생산실적 목록 -->
+  <div class="card">
+    <div class="card-header flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900">생산실적 목록</h2>
+      <%= link_to "실적 입력",
+          new_productions_production_result_path(work_order_id: @work_order.id),
+          class: "btn btn-sm btn-primary" if @work_order.planned? || @work_order.in_progress? %>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              LOT 번호
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              공정
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              설비
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              작업자
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              양품수
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              불량수
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              불량률
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              등록일시
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @production_results.any? %>
+            <% @production_results.each do |result| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= link_to result.lot_no,
+                      productions_production_result_path(result),
+                      class: "text-blue-600 hover:text-blue-800 font-medium" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= result.manufacturing_process.process_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= result.equipment&.equipment_name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= result.worker&.worker_name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <%= number_with_delimiter(result.good_qty) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <%= number_with_delimiter(result.defect_qty) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <span class="<%= result.defect_rate > 0 ? 'text-red-600 font-semibold' : 'text-gray-900' %>">
+                    <%= number_with_precision(result.defect_rate, precision: 2) %>%
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                  <%= l(result.created_at, format: :short) %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                등록된 생산실적이 없습니다.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

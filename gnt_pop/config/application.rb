@@ -23,5 +23,10 @@ module GntPop
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # 한국 시간대 및 로케일 설정
+    config.time_zone = "Seoul"
+    config.i18n.default_locale = :ko
+    config.i18n.available_locales = [ :ko, :en ]
   end
 end

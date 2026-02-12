@@ -1,0 +1,115 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title">검사결과 상세</h1>
+    <div class="flex gap-2">
+      <%= link_to "수정", edit_quality_inspection_path(@inspection), class: "btn btn-secondary" %>
+      <%= link_to "목록", quality_inspections_path, class: "btn btn-outline" %>
+    </div>
+  </div>
+
+  <%# 기본 정보 %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">기본 정보</h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">LOT 번호</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold"><%= @inspection.lot_no %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">검사유형</dt>
+          <dd class="mt-1">
+            <%
+              type_classes = case @inspection.insp_type
+              when "incoming" then "bg-blue-100 text-blue-800"
+              when "process"  then "bg-yellow-100 text-yellow-800"
+              when "outgoing" then "bg-green-100 text-green-800"
+              else "bg-gray-100 text-gray-800"
+              end
+            %>
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= type_classes %>">
+              <%= @inspection.insp_type_label %>
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">검사일</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @inspection.insp_date.strftime("%Y-%m-%d") %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">판정</dt>
+          <dd class="mt-1">
+            <%
+              result_classes = case @inspection.result
+              when "pass"        then "bg-green-100 text-green-800"
+              when "fail"        then "bg-red-100 text-red-800"
+              when "conditional" then "bg-yellow-100 text-yellow-800"
+              else "bg-gray-100 text-gray-800"
+              end
+            %>
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= result_classes %>">
+              <%= @inspection.result_label %>
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">검사자</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @inspection.worker&.name || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">공정</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @inspection.manufacturing_process&.process_name || "-" %></dd>
+        </div>
+      </dl>
+
+      <% if @inspection.notes.present? %>
+        <div class="mt-4">
+          <dt class="text-sm font-medium text-gray-500">비고</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @inspection.notes %></dd>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 검사항목 %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">검사항목</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No.</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목명</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">규격</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">측정값</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">단위</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">판정</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @inspection_items.each_with_index do |item, idx| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= idx + 1 %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= item.item_name %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= item.spec_value || "-" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right"><%= item.measured_value ? number_with_precision(item.measured_value, precision: 2) : "-" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= item.unit || "-" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <% judgment_classes = item.judgment_pass? ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800" %>
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= judgment_classes %>">
+                  <%= item.judgment_label %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @inspection_items.empty? %>
+      <%= render "shared/empty_state", message: "등록된 검사항목이 없습니다" %>
+    <% end %>
+  </div>
+</div>

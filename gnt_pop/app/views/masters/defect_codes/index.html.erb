@@ -1,0 +1,89 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title">불량코드 마스터</h1>
+    <%= link_to "신규 등록", new_masters_defect_code_path, class: "btn btn-primary" %>
+  </div>
+
+  <%= render "shared/flash_messages" %>
+
+  <%# 검색 영역 %>
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: masters_defect_codes_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :code_cont, "불량코드", class: "form-label" %>
+          <%= f.search_field :code_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div>
+          <%= f.label :name_cont, "불량명", class: "form-label" %>
+          <%= f.search_field :name_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div class="flex gap-2">
+          <%= f.submit "검색", class: "btn btn-secondary" %>
+          <%= link_to "초기화", masters_defect_codes_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 테이블 영역 %>
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">불량코드</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">불량명</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">설명</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @defect_codes.each do |defect_code| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= defect_code.code %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= defect_code.name %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500">
+                <div class="max-w-xs truncate" title="<%= defect_code.description %>">
+                  <%= defect_code.description || "-" %>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% if defect_code.is_active %>
+                  <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    활성
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                    비활성
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center gap-2">
+                  <%= link_to "수정", edit_masters_defect_code_path(defect_code), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <%= button_to "삭제",
+                      masters_defect_code_path(defect_code),
+                      method: :delete,
+                      class: "text-red-600 hover:text-red-900",
+                      form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @defect_codes.empty? %>
+      <%= render "shared/empty_state", message: "등록된 불량코드가 없습니다" %>
+    <% end %>
+  </div>
+
+  <%= render "shared/pagination" %>
+</div>

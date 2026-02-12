@@ -1,0 +1,62 @@
+<%# Pagy v43+ 호환 페이지네이션 컴포넌트 %>
+<%# @pagy 인스턴스 변수를 통해 페이지네이션 정보를 전달받음 %>
+
+<% if @pagy && @pagy.pages > 1 %>
+  <nav class="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6" aria-label="페이지네이션">
+    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm text-gray-700">
+          전체 <span class="font-medium"><%= @pagy.count %></span>건 중
+          <span class="font-medium"><%= @pagy.from %></span> -
+          <span class="font-medium"><%= @pagy.to %></span>
+        </p>
+      </div>
+      <div>
+        <nav class="inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+          <% if @pagy.previous %>
+            <%= link_to "이전", url_for(page: @pagy.previous), class: "relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0", "aria-label": "이전 페이지" %>
+          <% else %>
+            <span class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed" aria-disabled="true">이전</span>
+          <% end %>
+
+          <% (1..@pagy.pages).each do |page_num| %>
+            <% if page_num == @pagy.page %>
+              <span class="relative z-10 inline-flex items-center bg-gnt-red px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gnt-red" aria-current="page"><%= page_num %></span>
+            <% elsif @pagy.pages <= 7 || page_num == 1 || page_num == @pagy.pages || (page_num - @pagy.page).abs <= 1 %>
+              <%= link_to page_num, url_for(page: page_num), class: "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0", "aria-label": "#{page_num}페이지로 이동" %>
+            <% elsif page_num == 2 && @pagy.page > 4 %>
+              <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">...</span>
+            <% elsif page_num == @pagy.pages - 1 && @pagy.page < @pagy.pages - 3 %>
+              <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">...</span>
+            <% end %>
+          <% end %>
+
+          <% if @pagy.next %>
+            <%= link_to "다음", url_for(page: @pagy.next), class: "relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0", "aria-label": "다음 페이지" %>
+          <% else %>
+            <span class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed" aria-disabled="true">다음</span>
+          <% end %>
+        </nav>
+      </div>
+    </div>
+
+    <%# 모바일 페이지네이션 %>
+    <div class="flex flex-1 justify-between sm:hidden">
+      <% if @pagy.previous %>
+        <%= link_to "이전", url_for(page: @pagy.previous), class: "relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      <% else %>
+        <span class="relative inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">이전</span>
+      <% end %>
+
+      <span class="text-sm text-gray-700">
+        <span class="font-medium"><%= @pagy.page %></span> / <span class="font-medium"><%= @pagy.pages %></span>
+      </span>
+
+      <% if @pagy.next %>
+        <%= link_to "다음", url_for(page: @pagy.next), class: "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      <% else %>
+        <span class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">다음</span>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

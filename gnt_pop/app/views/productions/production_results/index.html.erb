@@ -1,0 +1,139 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex justify-between items-center">
+    <h1 class="page-title">생산실적 관리</h1>
+    <%= link_to "실적 입력", new_productions_production_result_path, class: "btn btn-primary" %>
+  </div>
+
+  <!-- 검색 필터 -->
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: productions_production_results_path, method: :get do |f| %>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- LOT 번호 검색 -->
+          <div>
+            <%= f.label :lot_no_cont, "LOT 번호", class: "form-label" %>
+            <%= f.search_field :lot_no_cont,
+                placeholder: "예: L-20260211-CVT-001-001",
+                class: "form-input" %>
+          </div>
+
+          <!-- 작업지시코드 검색 -->
+          <div>
+            <%= f.label :work_order_work_order_code_cont, "작업지시코드", class: "form-label" %>
+            <%= f.search_field :work_order_work_order_code_cont,
+                placeholder: "예: WO-20260211-001",
+                class: "form-input" %>
+          </div>
+
+          <!-- 검색 버튼 -->
+          <div class="flex items-end">
+            <%= f.submit "검색", class: "btn btn-primary w-full" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 생산실적 목록 테이블 -->
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              LOT 번호
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              작업지시
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              공정
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              설비
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              작업자
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              양품수
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              불량수
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              불량률
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              등록일시
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              관리
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @production_results.any? %>
+            <% @production_results.each do |result| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= link_to result.lot_no,
+                      productions_production_result_path(result),
+                      class: "text-blue-600 hover:text-blue-800 font-medium" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= link_to result.work_order.work_order_code,
+                      productions_work_order_path(result.work_order),
+                      class: "text-blue-600 hover:text-blue-800" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= result.manufacturing_process.process_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= result.equipment&.equipment_name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= result.worker&.name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <%= number_with_delimiter(result.good_qty) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <%= number_with_delimiter(result.defect_qty) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <span class="<%= result.defect_rate > 0 ? 'text-red-600 font-semibold' : 'text-gray-900' %>">
+                    <%= number_with_precision(result.defect_rate, precision: 2) %>%
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                  <%= l(result.created_at, format: :short) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                  <div class="flex items-center justify-center gap-2">
+                    <%= link_to "수정", edit_productions_production_result_path(result), class: "btn btn-sm btn-outline" %>
+                    <%= button_to "삭제",
+                        productions_production_result_path(result),
+                        method: :delete,
+                        class: "btn btn-sm btn-outline text-red-600",
+                        form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                등록된 생산실적이 없습니다.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <%= render "shared/pagination" %>
+  </div>
+</div>

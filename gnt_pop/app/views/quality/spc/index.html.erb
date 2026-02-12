@@ -1,0 +1,104 @@
+<div class="space-y-6">
+  <h1 class="page-title">SPC 통계적 공정관리</h1>
+
+  <%# 필터 %>
+  <div class="card">
+    <div class="card-body">
+      <%= form_with url: quality_spc_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :item_name, "검사항목", class: "form-label" %>
+          <%= f.select :item_name,
+              options_for_select(@item_names, @item_name),
+              { prompt: "선택" }, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.label :from, "시작일", class: "form-label" %>
+          <%= f.date_field :from, value: @from, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.label :to, "종료일", class: "form-label" %>
+          <%= f.date_field :to, value: @to, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.submit "조회", class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 공정능력지수 카드 %>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">Cp (공정능력지수)</p>
+        <% if @capability[:cp] %>
+          <% cp_color = @capability[:cp] >= 1.33 ? "text-green-600" : (@capability[:cp] >= 1.0 ? "text-amber-600" : "text-red-600") %>
+          <p class="mt-1 text-3xl font-bold <%= cp_color %>"><%= @capability[:cp] %></p>
+        <% else %>
+          <p class="mt-1 text-lg text-gray-400">데이터 부족</p>
+        <% end %>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">Cpk (치우침 고려)</p>
+        <% if @capability[:cpk] %>
+          <% cpk_color = @capability[:cpk] >= 1.33 ? "text-green-600" : (@capability[:cpk] >= 1.0 ? "text-amber-600" : "text-red-600") %>
+          <p class="mt-1 text-3xl font-bold <%= cpk_color %>"><%= @capability[:cpk] %></p>
+        <% else %>
+          <p class="mt-1 text-lg text-gray-400">데이터 부족</p>
+        <% end %>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">데이터 수</p>
+        <p class="mt-1 text-3xl font-bold text-blue-600"><%= number_with_delimiter(@capability[:data_count]) %></p>
+      </div>
+    </div>
+  </div>
+
+  <%# X-bar 관리도 %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">X-bar 관리도 (서브그룹 평균)</h2>
+      <% if @xbar_data.any? %>
+        <div class="mb-2 flex gap-4 text-xs text-gray-500">
+          <span>UCL: <strong><%= @control_limits[:xbar][:ucl] %></strong></span>
+          <span>CL: <strong><%= @control_limits[:xbar][:cl] %></strong></span>
+          <span>LCL: <strong><%= @control_limits[:xbar][:lcl] %></strong></span>
+        </div>
+        <%= line_chart [
+          { name: "X-bar", data: @xbar_data },
+          { name: "UCL", data: @xbar_data.map { |d, _| [d, @control_limits[:xbar][:ucl]] } },
+          { name: "CL", data: @xbar_data.map { |d, _| [d, @control_limits[:xbar][:cl]] } },
+          { name: "LCL", data: @xbar_data.map { |d, _| [d, @control_limits[:xbar][:lcl]] } }
+        ], colors: ["#4F46E5", "#EF4444", "#10B981", "#EF4444"] %>
+      <% else %>
+        <p class="text-center text-gray-500 py-8">해당 기간에 검사 데이터가 없습니다 (최소 2건/일 필요)</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# R 관리도 %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">R 관리도 (서브그룹 범위)</h2>
+      <% if @r_data.any? %>
+        <div class="mb-2 flex gap-4 text-xs text-gray-500">
+          <span>UCL: <strong><%= @control_limits[:r][:ucl] %></strong></span>
+          <span>CL: <strong><%= @control_limits[:r][:cl] %></strong></span>
+          <span>LCL: <strong><%= @control_limits[:r][:lcl] %></strong></span>
+        </div>
+        <%= line_chart [
+          { name: "R", data: @r_data },
+          { name: "UCL", data: @r_data.map { |d, _| [d, @control_limits[:r][:ucl]] } },
+          { name: "CL", data: @r_data.map { |d, _| [d, @control_limits[:r][:cl]] } },
+          { name: "LCL", data: @r_data.map { |d, _| [d, @control_limits[:r][:lcl]] } }
+        ], colors: ["#E31837", "#EF4444", "#10B981", "#EF4444"] %>
+      <% else %>
+        <p class="text-center text-gray-500 py-8">해당 기간에 검사 데이터가 없습니다 (최소 2건/일 필요)</p>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,413 @@
+{
+  "timestamp": "2026-02-11T07:25:02.131Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-11T07:24:54.088Z",
+    "activeFeatures": [
+      "production-tracking",
+      "migrate",
+      "gnt_pop",
+      "db",
+      "lot_generator_service.rb",
+      "work_order_code_generator_service.rb",
+      "dashboard_query_service.rb",
+      "initializers",
+      "helpers",
+      "productions",
+      "javascript",
+      "masters",
+      "config"
+    ],
+    "primaryFeature": "production-tracking",
+    "features": {
+      "production-tracking": {
+        "phase": "do",
+        "matchRate": null,
+        "iterationCount": 0,
+        "startedAt": "2026-02-11T06:00:00.000Z",
+        "documents": {
+          "plan": "docs/01-plan/features/production-tracking.plan.md",
+          "design": "docs/02-design/features/production-tracking.design.md",
+          "analysis": null,
+          "report": null
+        }
+      },
+      "migrate": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:16:12.711Z",
+          "lastUpdated": "2026-02-11T07:19:16.094Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/db/migrate/20260211071547_create_production_results.rb"
+      },
+      "gnt_pop": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:17:17.144Z",
+          "lastUpdated": "2026-02-11T07:24:37.956Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/models/equipment.rb"
+      },
+      "db": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:18:41.117Z",
+          "lastUpdated": "2026-02-11T07:18:41.117Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/db/seeds.rb"
+      },
+      "lot_generator_service.rb": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:22:34.636Z",
+          "lastUpdated": "2026-02-11T07:22:34.636Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/services/lot_generator_service.rb"
+      },
+      "work_order_code_generator_service.rb": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:22:40.276Z",
+          "lastUpdated": "2026-02-11T07:22:40.276Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/services/work_order_code_generator_service.rb"
+      },
+      "dashboard_query_service.rb": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:23:14.952Z",
+          "lastUpdated": "2026-02-11T07:23:14.952Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/services/dashboard_query_service.rb"
+      },
+      "initializers": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:23:26.710Z",
+          "lastUpdated": "2026-02-11T07:23:26.710Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/config/initializers/pagy.rb"
+      },
+      "helpers": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:23:32.206Z",
+          "lastUpdated": "2026-02-11T07:23:32.206Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/helpers/application_helper.rb"
+      },
+      "productions": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:24:24.609Z",
+          "lastUpdated": "2026-02-11T07:24:43.385Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/controllers/productions/production_results_controller.rb"
+      },
+      "javascript": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:24:28.419Z",
+          "lastUpdated": "2026-02-11T07:24:28.419Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/javascript/controllers/flash_controller.js"
+      },
+      "masters": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:24:51.415Z",
+          "lastUpdated": "2026-02-11T07:24:51.415Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/app/controllers/masters/products_controller.rb"
+      },
+      "config": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-11T07:24:54.088Z",
+          "lastUpdated": "2026-02-11T07:24:54.088Z"
+        },
+        "lastFile": "/Users/kimkookjin/Projects/2026plan/GnT/gnt_pop/config/routes.rb"
+      }
+    },
+    "pipeline": {
+      "currentPhase": 1,
+      "level": "Dynamic",
+      "phaseHistory": []
+    },
+    "session": {
+      "startedAt": "2026-02-11T05:44:31.882Z",
+      "onboardingCompleted": true,
+      "lastActivity": "2026-02-11T07:24:54.088Z"
+    },
+    "history": [
+      {
+        "action": "plan_created",
+        "feature": "production-tracking",
+        "timestamp": "2026-02-11T06:00:00.000Z"
+      },
+      {
+        "action": "design_created",
+        "feature": "production-tracking",
+        "timestamp": "2026-02-11T06:30:00.000Z"
+      },
+      {
+        "action": "do_started",
+        "feature": "production-tracking",
+        "timestamp": "2026-02-11T07:00:00.000Z"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:12.711Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:17.161Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:21.827Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:25.906Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:29.912Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:34.824Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:41.294Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:16:46.352Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:17.144Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:22.979Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:28.060Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:32.281Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:37.601Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:45.207Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:54.306Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:17:58.793Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:18:41.117Z",
+        "feature": "db",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:19:16.094Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:19:43.965Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:22:34.636Z",
+        "feature": "lot_generator_service.rb",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:22:40.276Z",
+        "feature": "work_order_code_generator_service.rb",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:23:14.952Z",
+        "feature": "dashboard_query_service.rb",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:23:26.710Z",
+        "feature": "initializers",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:23:31.299Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:23:32.206Z",
+        "feature": "helpers",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:24.609Z",
+        "feature": "productions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:28.419Z",
+        "feature": "javascript",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:35.700Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:37.956Z",
+        "feature": "gnt_pop",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:43.385Z",
+        "feature": "productions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:51.415Z",
+        "feature": "masters",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-11T07:24:54.088Z",
+        "feature": "config",
+        "phase": "do",
+        "action": "updated"
+      }
+    ]
+  }
+}

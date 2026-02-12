@@ -1,0 +1,170 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex justify-between items-center">
+    <h1 class="page-title">작업지시 관리</h1>
+    <%= link_to "신규 작업지시", new_productions_work_order_path, class: "btn btn-primary" %>
+  </div>
+
+  <!-- 검색 필터 -->
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: productions_work_orders_path, method: :get do |f| %>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- 작업지시코드 검색 -->
+          <div>
+            <%= f.label :work_order_code_cont, "작업지시코드", class: "form-label" %>
+            <%= f.search_field :work_order_code_cont,
+                placeholder: "예: WO-20260211-001",
+                class: "form-input" %>
+          </div>
+
+          <!-- 상태 필터 -->
+          <div>
+            <%= f.label :status_eq, "상태", class: "form-label" %>
+            <%= f.select :status_eq,
+                options_for_select([
+                  ["전체", ""],
+                  ["계획", "planned"],
+                  ["진행중", "in_progress"],
+                  ["완료", "completed"],
+                  ["취소", "cancelled"]
+                ], params.dig(:q, :status_eq)),
+                {},
+                class: "form-input" %>
+          </div>
+
+          <!-- 계획일 검색 -->
+          <div>
+            <%= f.label :plan_date_eq, "계획일", class: "form-label" %>
+            <%= f.date_field :plan_date_eq, class: "form-input" %>
+          </div>
+
+          <!-- 검색 버튼 -->
+          <div class="flex items-end">
+            <%= f.submit "검색", class: "btn btn-primary w-full" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 작업지시 목록 테이블 -->
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              작업지시코드
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              제품명
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              지시수량
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              양품수량
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              진행률
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              계획일
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              우선순위
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              상태
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              관리
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @work_orders.any? %>
+            <% @work_orders.each do |work_order| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= link_to work_order.work_order_code,
+                      productions_work_order_path(work_order),
+                      class: "text-blue-600 hover:text-blue-800 font-medium" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= work_order.product.product_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                  <%= number_with_delimiter(work_order.order_qty) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                  <%= number_with_delimiter(work_order.total_good_qty) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                  <div class="flex items-center justify-end">
+                    <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                      <div class="bg-blue-600 h-2 rounded-full"
+                           style="width: <%= [work_order.progress_rate, 100].min %>%"></div>
+                    </div>
+                    <span class="text-sm font-medium"><%= work_order.progress_rate %>%</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                  <%= l(work_order.plan_date, format: :long) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <span class="text-sm font-medium"><%= work_order.priority %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <%= render partial: "status_badge", locals: { status: work_order.status } %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                  <div class="flex items-center justify-center gap-2">
+                    <% if work_order.planned? %>
+                      <%= button_to "시작",
+                          start_productions_work_order_path(work_order),
+                          method: :patch,
+                          class: "btn btn-sm btn-primary",
+                          form: { data: { turbo_confirm: "작업을 시작하시겠습니까?" } } %>
+                      <%= link_to "수정",
+                          edit_productions_work_order_path(work_order),
+                          class: "btn btn-sm btn-outline" %>
+                      <%= button_to "삭제",
+                          productions_work_order_path(work_order),
+                          method: :delete,
+                          class: "btn btn-sm btn-outline text-red-600",
+                          form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                    <% elsif work_order.in_progress? %>
+                      <%= button_to "완료",
+                          complete_productions_work_order_path(work_order),
+                          method: :patch,
+                          class: "btn btn-sm btn-primary",
+                          form: { data: { turbo_confirm: "작업을 완료하시겠습니까?" } } %>
+                      <%= button_to "취소",
+                          cancel_productions_work_order_path(work_order),
+                          method: :patch,
+                          class: "btn btn-sm btn-outline text-red-600",
+                          form: { data: { turbo_confirm: "작업을 취소하시겠습니까?" } } %>
+                    <% else %>
+                      <span class="text-gray-400 text-xs">-</span>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                등록된 작업지시가 없습니다.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <%= render "shared/pagination" %>
+  </div>
+</div>

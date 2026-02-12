@@ -1,0 +1,99 @@
+<div class="space-y-6">
+  <h1 class="page-title">불량분석</h1>
+
+  <%# 기간 필터 %>
+  <div class="card">
+    <div class="card-body">
+      <%= form_with url: quality_defect_analysis_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :from, "시작일", class: "form-label" %>
+          <%= f.date_field :from, value: @from, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.label :to, "종료일", class: "form-label" %>
+          <%= f.date_field :to, value: @to, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.submit "조회", class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 요약 카드 %>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">총 생산수량</p>
+        <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_with_delimiter(@summary[:total_production]) %></p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">총 불량수량</p>
+        <p class="mt-1 text-2xl font-bold text-red-600"><%= number_with_delimiter(@summary[:total_defect]) %></p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">불량률</p>
+        <p class="mt-1 text-2xl font-bold text-amber-600"><%= @summary[:defect_rate] %>%</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <p class="text-sm font-medium text-gray-500">검사 건수</p>
+        <p class="mt-1 text-2xl font-bold text-blue-600"><%= number_with_delimiter(@summary[:inspection_count]) %></p>
+      </div>
+    </div>
+  </div>
+
+  <%# 파레토 차트 %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">불량유형별 파레토 차트</h2>
+      <% if @pareto_data.any? %>
+        <%= bar_chart @pareto_data, colors: ["#E31837"], xtitle: "불량유형", ytitle: "불량수량" %>
+      <% else %>
+        <p class="text-center text-gray-500 py-8">해당 기간에 불량 데이터가 없습니다</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 공정별/제품별 불량률 %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">공정별 불량률 (%)</h2>
+        <% if @by_process.any? %>
+          <%= bar_chart @by_process, colors: ["#4F46E5"], xtitle: "공정", ytitle: "불량률(%)", suffix: "%" %>
+        <% else %>
+          <p class="text-center text-gray-500 py-8">데이터 없음</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">제품별 불량률 (%)</h2>
+        <% if @by_product.any? %>
+          <%= bar_chart @by_product, colors: ["#059669"], xtitle: "제품", ytitle: "불량률(%)", suffix: "%" %>
+        <% else %>
+          <p class="text-center text-gray-500 py-8">데이터 없음</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# 일별 불량 추이 %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">일별 불량수량 추이</h2>
+      <% if @daily_trend.any? %>
+        <%= line_chart @daily_trend, colors: ["#E31837"], xtitle: "날짜", ytitle: "불량수량" %>
+      <% else %>
+        <p class="text-center text-gray-500 py-8">해당 기간에 데이터가 없습니다</p>
+      <% end %>
+    </div>
+  </div>
+</div>

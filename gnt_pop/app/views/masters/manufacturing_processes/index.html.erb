@@ -1,0 +1,95 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title">공정 마스터</h1>
+    <%= link_to "신규 등록", new_masters_manufacturing_process_path, class: "btn btn-primary" %>
+  </div>
+
+  <%= render "shared/flash_messages" %>
+
+  <%# 검색 영역 %>
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: masters_manufacturing_processes_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :process_code_cont, "공정코드", class: "form-label" %>
+          <%= f.search_field :process_code_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div>
+          <%= f.label :process_name_cont, "공정명", class: "form-label" %>
+          <%= f.search_field :process_name_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div class="flex gap-2">
+          <%= f.submit "검색", class: "btn btn-secondary" %>
+          <%= link_to "초기화", masters_manufacturing_processes_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 테이블 영역 %>
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순서</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공정코드</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공정명</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">표준 사이클타임</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @manufacturing_processes.each do |process| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= process.process_order %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= process.process_code %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= process.process_name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <% if process.std_cycle_time.present? %>
+                  <%= process.std_cycle_time %>초
+                <% else %>
+                  <span class="text-gray-400">-</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% if process.is_active %>
+                  <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    활성
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                    비활성
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center gap-2">
+                  <%= link_to "수정", edit_masters_manufacturing_process_path(process), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <%= button_to "삭제",
+                      masters_manufacturing_process_path(process),
+                      method: :delete,
+                      class: "text-red-600 hover:text-red-900",
+                      form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @manufacturing_processes.empty? %>
+      <%= render "shared/empty_state", message: "등록된 공정이 없습니다" %>
+    <% end %>
+  </div>
+
+  <%= render "shared/pagination" %>
+</div>

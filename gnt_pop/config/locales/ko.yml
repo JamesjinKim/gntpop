@@ -1,0 +1,128 @@
+ko:
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%m/%d"
+      long: "%Y년 %m월 %d일"
+
+  time:
+    formats:
+      default: "%Y-%m-%d %H:%M:%S"
+      short: "%m/%d %H:%M"
+      long: "%Y년 %m월 %d일 %H시 %M분"
+
+  datetime:
+    formats:
+      default: "%Y-%m-%d %H:%M:%S"
+      short: "%m/%d %H:%M"
+      long: "%Y년 %m월 %d일 %H시 %M분"
+
+  activerecord:
+    models:
+      work_order: "작업지시"
+      production_result: "생산실적"
+      product: "제품"
+      manufacturing_process: "공정"
+      equipment: "설비"
+      worker: "작업자"
+      defect_code: "불량코드"
+      defect_record: "불량기록"
+
+    attributes:
+      work_order:
+        work_order_code: "작업지시코드"
+        product: "제품"
+        product_id: "제품"
+        order_qty: "지시수량"
+        plan_date: "계획일"
+        priority: "우선순위"
+        status: "상태"
+        statuses:
+          planned: "계획"
+          in_progress: "진행중"
+          completed: "완료"
+          cancelled: "취소"
+
+      production_result:
+        lot_no: "LOT 번호"
+        work_order: "작업지시"
+        work_order_id: "작업지시"
+        manufacturing_process: "공정"
+        manufacturing_process_id: "공정"
+        equipment: "설비"
+        equipment_id: "설비"
+        worker: "작업자"
+        worker_id: "작업자"
+        good_qty: "양품수량"
+        defect_qty: "불량수량"
+        start_time: "작업 시작시간"
+        end_time: "작업 종료시간"
+
+      product:
+        product_code: "제품코드"
+        product_name: "제품명"
+        product_group: "제품그룹"
+        spec: "규격"
+        unit: "단위"
+        is_active: "활성 여부"
+        product_groups:
+          converter: "컨버터"
+          transformer_inductor: "변압기/인덕터"
+          electronic_component: "전자부품"
+          circuit_board: "회로기판"
+
+      manufacturing_process:
+        process_code: "공정코드"
+        process_name: "공정명"
+        process_order: "공정순서"
+        is_active: "활성 여부"
+
+      equipment:
+        equipment_code: "설비코드"
+        equipment_name: "설비명"
+        manufacturing_process: "공정"
+        status: "상태"
+        is_active: "활성 여부"
+        statuses:
+          idle: "대기"
+          run: "가동"
+          down: "고장"
+          pm: "보전"
+
+      worker:
+        worker_code: "작업자코드"
+        worker_name: "작업자명"
+        manufacturing_process: "공정"
+        is_active: "활성 여부"
+
+      defect_code:
+        defect_code: "불량코드"
+        defect_name: "불량명"
+        description: "설명"
+        is_active: "활성 여부"
+
+      defect_record:
+        defect_code: "불량코드"
+        defect_code_id: "불량코드"
+        defect_qty: "불량수량"
+        description: "비고"
+
+    errors:
+      messages:
+        record_invalid: "검증에 실패했습니다: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "%{record}가 존재하므로 삭제할 수 없습니다"
+          has_many: "%{record}가 존재하므로 삭제할 수 없습니다"
+
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: "을(를) 입력해주세요"
+      taken: "은(는) 이미 사용중입니다"
+      invalid: "은(는) 유효하지 않습니다"
+      greater_than: "은(는) %{count}보다 커야 합니다"
+      greater_than_or_equal_to: "은(는) %{count}보다 크거나 같아야 합니다"
+      less_than: "은(는) %{count}보다 작아야 합니다"
+      less_than_or_equal_to: "은(는) %{count}보다 작거나 같아야 합니다"
+      not_a_number: "은(는) 숫자가 아닙니다"
+      not_an_integer: "은(는) 정수가 아닙니다"

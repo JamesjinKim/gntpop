@@ -1,0 +1,119 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title">설비 마스터</h1>
+    <%= link_to "신규 등록", new_masters_equipment_path, class: "btn btn-primary" %>
+  </div>
+
+  <%= render "shared/flash_messages" %>
+
+  <%# 검색 영역 %>
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: masters_equipments_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :equipment_code_cont, "설비코드", class: "form-label" %>
+          <%= f.search_field :equipment_code_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div>
+          <%= f.label :equipment_name_cont, "설비명", class: "form-label" %>
+          <%= f.search_field :equipment_name_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div>
+          <%= f.label :status_eq, "상태", class: "form-label" %>
+          <%= f.select :status_eq,
+              Equipment.statuses.keys.map { |k| [Equipment.new(status: k).status_i18n, k] },
+              { include_blank: "전체" },
+              class: "form-input" %>
+        </div>
+        <div class="flex gap-2">
+          <%= f.submit "검색", class: "btn btn-secondary" %>
+          <%= link_to "초기화", masters_equipments_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 테이블 영역 %>
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">설비코드</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">설비명</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">소속 공정</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">위치</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">활성</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @equipments.each do |equipment| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= equipment.equipment_code %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= equipment.equipment_name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= equipment.manufacturing_process&.process_name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= equipment.location || "-" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% case equipment.status %>
+                <% when "idle" %>
+                  <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                    <%= equipment.status_i18n %>
+                  </span>
+                <% when "run" %>
+                  <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    <%= equipment.status_i18n %>
+                  </span>
+                <% when "down" %>
+                  <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                    <%= equipment.status_i18n %>
+                  </span>
+                <% when "pm" %>
+                  <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                    <%= equipment.status_i18n %>
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% if equipment.is_active %>
+                  <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    활성
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                    비활성
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center gap-2">
+                  <%= link_to "수정", edit_masters_equipment_path(equipment), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <%= button_to "삭제",
+                      masters_equipment_path(equipment),
+                      method: :delete,
+                      class: "text-red-600 hover:text-red-900",
+                      form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @equipments.empty? %>
+      <%= render "shared/empty_state", message: "등록된 설비가 없습니다" %>
+    <% end %>
+  </div>
+
+  <%= render "shared/pagination" %>
+</div>

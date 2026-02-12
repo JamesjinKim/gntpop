@@ -1,0 +1,117 @@
+<%= form_with(model: [:quality, inspection], class: "space-y-6") do |f| %>
+  <% if inspection.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="text-sm text-red-800">
+        <ul class="list-disc pl-5 space-y-1">
+          <% inspection.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 기본 정보 %>
+  <div class="card">
+    <div class="card-body space-y-4">
+      <h2 class="text-lg font-semibold text-gray-900">기본 정보</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          <%= f.label :lot_no, "LOT 번호", class: "form-label" %>
+          <%= f.text_field :lot_no, class: "form-input", placeholder: "LOT 번호 입력" %>
+        </div>
+
+        <div>
+          <%= f.label :insp_type, "검사유형", class: "form-label" %>
+          <%= f.select :insp_type,
+              options_for_select([["수입검사", "incoming"], ["공정검사", "process"], ["출하검사", "outgoing"]], inspection.insp_type),
+              { prompt: "선택" }, class: "form-input" %>
+        </div>
+
+        <div>
+          <%= f.label :insp_date, "검사일", class: "form-label" %>
+          <%= f.date_field :insp_date, class: "form-input" %>
+        </div>
+
+        <div>
+          <%= f.label :manufacturing_process_id, "공정", class: "form-label" %>
+          <%= f.select :manufacturing_process_id,
+              options_from_collection_for_select(@processes, :id, :process_name, inspection.manufacturing_process_id),
+              { prompt: "선택" }, class: "form-input" %>
+        </div>
+
+        <div>
+          <%= f.label :worker_id, "검사자", class: "form-label" %>
+          <%= f.select :worker_id,
+              @workers.map { |w| ["#{w.employee_number} - #{w.name}", w.id] },
+              { prompt: "선택", selected: inspection.worker_id }, class: "form-input" %>
+        </div>
+
+        <div>
+          <%= f.label :result, "판정", class: "form-label" %>
+          <%= f.select :result,
+              options_for_select([["합격", "pass"], ["불합격", "fail"], ["조건부합격", "conditional"]], inspection.result),
+              { prompt: "선택" }, class: "form-input" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :notes, "비고", class: "form-label" %>
+        <%= f.text_area :notes, class: "form-input", rows: 2, placeholder: "비고 사항" %>
+      </div>
+    </div>
+  </div>
+
+  <%# 검사항목 %>
+  <div class="card">
+    <div class="card-body space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">검사항목</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">항목명</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">규격</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">측정값</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">단위</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">판정</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <%= f.fields_for :inspection_items do |item_f| %>
+              <tr>
+                <td class="px-4 py-2">
+                  <%= item_f.text_field :item_name, class: "form-input text-sm", placeholder: "예: 입력전압" %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= item_f.text_field :spec_value, class: "form-input text-sm", placeholder: "예: DC 450~850V" %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= item_f.number_field :measured_value, class: "form-input text-sm", step: "0.01", placeholder: "실측값" %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= item_f.text_field :unit, class: "form-input text-sm", placeholder: "V, MΩ" %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= item_f.select :judgment,
+                      options_for_select([["합격", "pass"], ["불합격", "fail"]], item_f.object.judgment),
+                      {}, class: "form-input text-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <%# 버튼 %>
+  <div class="flex justify-end gap-3">
+    <%= link_to "취소", quality_inspections_path, class: "btn btn-outline" %>
+    <%= f.submit inspection.persisted? ? "수정" : "등록", class: "btn btn-primary" %>
+  </div>
+<% end %>

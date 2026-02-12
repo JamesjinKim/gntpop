@@ -1,0 +1,14 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex justify-between items-center">
+    <h1 class="page-title">작업지시 수정</h1>
+    <%= link_to "취소", productions_work_orders_path, class: "btn btn-outline" %>
+  </div>
+
+  <!-- 폼 카드 -->
+  <div class="card max-w-2xl">
+    <div class="card-body">
+      <%= render "form", work_order: @work_order %>
+    </div>
+  </div>
+</div>

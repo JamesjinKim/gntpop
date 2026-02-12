@@ -1,0 +1,98 @@
+<%# 설비 등록/수정 폼 %>
+<%= form_with(
+  model: equipment,
+  url: equipment.persisted? ? masters_equipment_path(equipment) : masters_equipments_path,
+  class: "space-y-6"
+) do |f| %>
+
+  <%# 에러 메시지 표시 %>
+  <% if equipment.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="shrink-0">
+          <svg class="size-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">입력 내용을 확인해주세요</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% equipment.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 설비코드 %>
+  <div>
+    <%= f.label :equipment_code, "설비코드", class: "form-label" %>
+    <%= f.text_field :equipment_code,
+        class: "form-input",
+        placeholder: "EQ-WND-01",
+        required: true,
+        autofocus: true %>
+    <p class="mt-1 text-sm text-gray-500">고유한 설비 코드를 입력하세요 (예: EQ-WND-01)</p>
+  </div>
+
+  <%# 설비명 %>
+  <div>
+    <%= f.label :equipment_name, "설비명", class: "form-label" %>
+    <%= f.text_field :equipment_name,
+        class: "form-input",
+        placeholder: "권선기 1호기",
+        required: true %>
+  </div>
+
+  <%# 소속 공정 %>
+  <div>
+    <%= f.label :manufacturing_process_id, "소속 공정", class: "form-label" %>
+    <%= f.select :manufacturing_process_id,
+        ManufacturingProcess.active.ordered.map { |p| ["#{p.process_name} (#{p.process_code})", p.id] },
+        { include_blank: "선택하세요" },
+        class: "form-input",
+        required: true %>
+  </div>
+
+  <%# 위치 %>
+  <div>
+    <%= f.label :location, "위치", class: "form-label" %>
+    <%= f.text_field :location,
+        class: "form-input",
+        placeholder: "A동 1라인" %>
+    <p class="mt-1 text-sm text-gray-500">설비가 설치된 물리적 위치</p>
+  </div>
+
+  <%# 상태 %>
+  <div>
+    <%= f.label :status, "상태", class: "form-label" %>
+    <%= f.select :status,
+        Equipment.statuses.keys.map { |k| [Equipment.new(status: k).status_i18n, k] },
+        { include_blank: "선택하세요" },
+        class: "form-input",
+        required: true %>
+  </div>
+
+  <%# 활성 여부 %>
+  <div class="flex items-center">
+    <div class="flex h-6 items-center">
+      <%= f.check_box :is_active,
+          class: "size-4 rounded border-gray-300 text-gnt-red focus:ring-gnt-red",
+          checked: equipment.is_active.nil? ? true : equipment.is_active %>
+    </div>
+    <div class="ml-3">
+      <%= f.label :is_active, "활성", class: "text-sm font-medium text-gray-900" %>
+      <p class="text-sm text-gray-500">비활성 시 생산실적 입력 등에서 선택할 수 없습니다</p>
+    </div>
+  </div>
+
+  <%# 버튼 영역 %>
+  <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+    <%= link_to "취소", masters_equipments_path, class: "btn btn-outline" %>
+    <%= f.submit equipment.persisted? ? "수정" : "등록", class: "btn btn-primary" %>
+  </div>
+<% end %>

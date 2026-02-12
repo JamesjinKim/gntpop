@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title><%= content_for(:title) || "생산현황판 | GnT POP" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full bg-slate-900 text-white"
+        data-controller="auto-refresh"
+        data-auto-refresh-interval-value="30000">
+
+    <%# 상단 바 %>
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <span class="text-lg font-bold text-gnt-red">GnT POP</span>
+        <span class="text-slate-600">|</span>
+        <span class="text-lg font-semibold text-white">생산현황판</span>
+      </div>
+      <div class="flex items-center space-x-6">
+        <span data-controller="clock">
+          <span data-clock-target="display" class="text-sm font-mono text-slate-300"></span>
+        </span>
+        <div class="flex items-center space-x-3">
+          <button onclick="document.documentElement.requestFullscreen()" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded border border-slate-600 hover:border-slate-500 transition-colors">
+            전체화면
+          </button>
+          <%= link_to "돌아가기", root_path, class: "text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded border border-slate-600 hover:border-slate-500 transition-colors" %>
+        </div>
+      </div>
+    </header>
+
+    <%# 메인 콘텐츠 %>
+    <main class="p-6 pb-16">
+      <%= yield %>
+    </main>
+
+    <%# 하단 바 %>
+    <footer class="fixed bottom-0 inset-x-0 bg-slate-800 border-t border-slate-700 px-6 py-2 flex items-center justify-between text-xs text-slate-500">
+      <span>GnT POP v1.0</span>
+      <span class="flex items-center space-x-2">
+        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+        <span>자동 새로고침 30초 | 남은 시간: <span data-auto-refresh-target="countdown">30</span>초</span>
+      </span>
+    </footer>
+  </body>
+</html>

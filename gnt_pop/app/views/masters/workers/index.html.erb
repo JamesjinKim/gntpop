@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title">작업자 마스터</h1>
+    <%= link_to "신규 등록", new_masters_worker_path, class: "btn btn-primary" %>
+  </div>
+
+  <%= render "shared/flash_messages" %>
+
+  <%# 검색 영역 %>
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: masters_workers_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :employee_number_cont, "사원번호", class: "form-label" %>
+          <%= f.search_field :employee_number_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div>
+          <%= f.label :name_cont, "이름", class: "form-label" %>
+          <%= f.search_field :name_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div class="flex gap-2">
+          <%= f.submit "검색", class: "btn btn-secondary" %>
+          <%= link_to "초기화", masters_workers_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 테이블 영역 %>
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">사원번호</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이름</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">소속 공정</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @workers.each do |worker| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= worker.employee_number %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= worker.name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <% if worker.manufacturing_process %>
+                  <%= worker.manufacturing_process.process_name %>
+                <% else %>
+                  <span class="text-gray-400">미배정</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% if worker.is_active %>
+                  <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    활성
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                    비활성
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center gap-2">
+                  <%= link_to "수정", edit_masters_worker_path(worker), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <%= button_to "삭제",
+                      masters_worker_path(worker),
+                      method: :delete,
+                      class: "text-red-600 hover:text-red-900",
+                      form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @workers.empty? %>
+      <%= render "shared/empty_state", message: "등록된 작업자가 없습니다" %>
+    <% end %>
+  </div>
+
+  <%= render "shared/pagination" %>
+</div>

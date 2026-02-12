@@ -1,0 +1,199 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex justify-between items-center">
+    <h1 class="page-title">생산실적 상세</h1>
+    <div class="space-x-2">
+      <%= link_to "목록", productions_production_results_path, class: "btn btn-outline" %>
+      <%= link_to "수정", edit_productions_production_result_path(@production_result), class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <!-- 기본 정보 카드 -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="text-lg font-semibold text-gray-900">기본 정보</h2>
+    </div>
+    <div class="card-body">
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <!-- LOT 번호 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">LOT 번호</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold"><%= @production_result.lot_no %></dd>
+        </div>
+
+        <!-- 작업지시코드 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">작업지시</dt>
+          <dd class="mt-1 text-sm">
+            <%= link_to @production_result.work_order.work_order_code,
+                productions_work_order_path(@production_result.work_order),
+                class: "text-blue-600 hover:text-blue-800 font-medium" %>
+          </dd>
+        </div>
+
+        <!-- 제품 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">제품</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @production_result.work_order.product.product_name %>
+            <span class="text-gray-500">(<%= @production_result.work_order.product.product_code %>)</span>
+          </dd>
+        </div>
+
+        <!-- 공정 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">공정</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @production_result.manufacturing_process.process_name %>
+            <span class="text-gray-500">(<%= @production_result.manufacturing_process.process_code %>)</span>
+          </dd>
+        </div>
+
+        <!-- 설비 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">설비</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @production_result.equipment&.equipment_name || "-" %>
+            <% if @production_result.equipment %>
+              <span class="text-gray-500">(<%= @production_result.equipment.equipment_code %>)</span>
+            <% end %>
+          </dd>
+        </div>
+
+        <!-- 작업자 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">작업자</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @production_result.worker&.worker_name || "-" %>
+            <% if @production_result.worker %>
+              <span class="text-gray-500">(<%= @production_result.worker.worker_code %>)</span>
+            <% end %>
+          </dd>
+        </div>
+
+        <!-- 양품수량 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">양품수량</dt>
+          <dd class="mt-1 text-lg font-bold text-green-600">
+            <%= number_with_delimiter(@production_result.good_qty) %> 개
+          </dd>
+        </div>
+
+        <!-- 불량수량 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">불량수량</dt>
+          <dd class="mt-1 text-lg font-bold text-red-600">
+            <%= number_with_delimiter(@production_result.defect_qty) %> 개
+          </dd>
+        </div>
+
+        <!-- 총 생산수량 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">총 생산수량</dt>
+          <dd class="mt-1 text-lg font-bold text-gray-900">
+            <%= number_with_delimiter(@production_result.total_qty) %> 개
+          </dd>
+        </div>
+
+        <!-- 불량률 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">불량률</dt>
+          <dd class="mt-1 text-lg font-bold <%= @production_result.defect_rate > 0 ? 'text-red-600' : 'text-gray-900' %>">
+            <%= number_with_precision(@production_result.defect_rate, precision: 2) %>%
+          </dd>
+        </div>
+
+        <!-- 작업 시작시간 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">작업 시작</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @production_result.start_time ? l(@production_result.start_time, format: :long) : "-" %>
+          </dd>
+        </div>
+
+        <!-- 작업 종료시간 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">작업 종료</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @production_result.end_time ? l(@production_result.end_time, format: :long) : "-" %>
+          </dd>
+        </div>
+
+        <!-- 등록일시 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">등록일시</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= l(@production_result.created_at, format: :long) %></dd>
+        </div>
+
+        <!-- 수정일시 -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500">수정일시</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= l(@production_result.updated_at, format: :long) %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- 불량 기록 목록 -->
+  <% if @production_result.defect_qty > 0 %>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="text-lg font-semibold text-gray-900">불량 기록</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                불량코드
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                불량명
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                불량수량
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                비고
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @defect_records.any? %>
+              <% @defect_records.each do |record| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <%= record.defect_code.defect_code %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <%= record.defect_code.defect_name %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-red-600">
+                    <%= number_with_delimiter(record.defect_qty) %>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <%= record.description || "-" %>
+                  </td>
+                </tr>
+              <% end %>
+              <!-- 합계 행 -->
+              <tr class="bg-gray-50 font-semibold">
+                <td colspan="2" class="px-6 py-4 text-sm text-right">합계</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                  <%= number_with_delimiter(@defect_records.sum(:defect_qty)) %>
+                </td>
+                <td></td>
+              </tr>
+            <% else %>
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                  등록된 불량 기록이 없습니다.
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>

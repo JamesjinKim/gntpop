@@ -1,0 +1,116 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title">검사결과 관리</h1>
+    <%= link_to "검사결과 입력", new_quality_inspection_path, class: "btn btn-primary" %>
+  </div>
+
+  <%= render "shared/flash_messages" %>
+
+  <%# 검색 영역 %>
+  <div class="card">
+    <div class="card-body">
+      <%= search_form_for @q, url: quality_inspections_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+        <div>
+          <%= f.label :lot_no_cont, "LOT번호", class: "form-label" %>
+          <%= f.search_field :lot_no_cont, class: "form-input", placeholder: "검색..." %>
+        </div>
+        <div>
+          <%= f.label :insp_type_eq, "검사유형", class: "form-label" %>
+          <%= f.select :insp_type_eq,
+              options_for_select([["전체", ""], ["수입검사", 0], ["공정검사", 1], ["출하검사", 2]], params.dig(:q, :insp_type_eq)),
+              {}, class: "form-input" %>
+        </div>
+        <div>
+          <%= f.label :result_eq, "판정", class: "form-label" %>
+          <%= f.select :result_eq,
+              options_for_select([["전체", ""], ["합격", 0], ["불합격", 1], ["조건부합격", 2]], params.dig(:q, :result_eq)),
+              {}, class: "form-input" %>
+        </div>
+        <div class="flex gap-2">
+          <%= f.submit "검색", class: "btn btn-secondary" %>
+          <%= link_to "초기화", quality_inspections_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 테이블 영역 %>
+  <div class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">LOT번호</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">검사유형</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">검사일</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">판정</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">검사자</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공정</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @inspections.each do |inspection| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= link_to inspection.lot_no, quality_inspection_path(inspection), class: "text-indigo-600 hover:text-indigo-900" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%
+                  type_classes = case inspection.insp_type
+                  when "incoming" then "bg-blue-100 text-blue-800"
+                  when "process"  then "bg-yellow-100 text-yellow-800"
+                  when "outgoing" then "bg-green-100 text-green-800"
+                  else "bg-gray-100 text-gray-800"
+                  end
+                %>
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= type_classes %>">
+                  <%= inspection.insp_type_label %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= inspection.insp_date.strftime("%Y-%m-%d") %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <%
+                  result_classes = case inspection.result
+                  when "pass"        then "bg-green-100 text-green-800"
+                  when "fail"        then "bg-red-100 text-red-800"
+                  when "conditional" then "bg-yellow-100 text-yellow-800"
+                  else "bg-gray-100 text-gray-800"
+                  end
+                %>
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= result_classes %>">
+                  <%= inspection.result_label %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= inspection.worker&.name || "-" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= inspection.manufacturing_process&.process_name || "-" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center gap-2">
+                  <%= link_to "상세", quality_inspection_path(inspection), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <%= link_to "수정", edit_quality_inspection_path(inspection), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <%= button_to "삭제",
+                      quality_inspection_path(inspection),
+                      method: :delete,
+                      class: "text-red-600 hover:text-red-900",
+                      form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @inspections.empty? %>
+      <%= render "shared/empty_state", message: "등록된 검사결과가 없습니다" %>
+    <% end %>
+  </div>
+
+  <%= render "shared/pagination" %>
+</div>

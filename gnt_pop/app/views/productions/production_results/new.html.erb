@@ -1,0 +1,14 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex justify-between items-center">
+    <h1 class="page-title">생산실적 입력</h1>
+    <%= link_to "취소", productions_production_results_path, class: "btn btn-outline" %>
+  </div>
+
+  <!-- 폼 카드 -->
+  <div class="card max-w-4xl">
+    <div class="card-body">
+      <%= render "form", production_result: @production_result %>
+    </div>
+  </div>
+</div>

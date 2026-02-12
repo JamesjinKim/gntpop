@@ -1,0 +1,84 @@
+<%= form_with(model: work_order, url: work_order.new_record? ? productions_work_orders_path : productions_work_order_path(work_order), local: true) do |f| %>
+  <!-- 에러 메시지 표시 -->
+  <% if work_order.errors.any? %>
+    <div class="mb-6 rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            <%= pluralize(work_order.errors.count, "개의 오류") %>가 발생했습니다
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc list-inside space-y-1">
+              <% work_order.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="space-y-6">
+    <!-- 제품 선택 -->
+    <div>
+      <%= f.label :product_id, "제품", class: "form-label" %>
+      <%= f.select :product_id,
+          options_from_collection_for_select(@products, :id, ->(p) { "#{p.product_code} - #{p.product_name}" }, work_order.product_id),
+          { prompt: "제품을 선택하세요" },
+          class: "form-input",
+          required: true %>
+      <% if work_order.errors[:product].any? %>
+        <p class="form-error"><%= work_order.errors[:product].first %></p>
+      <% end %>
+    </div>
+
+    <!-- 지시수량 -->
+    <div>
+      <%= f.label :order_qty, "지시수량", class: "form-label" %>
+      <%= f.number_field :order_qty,
+          placeholder: "예: 1000",
+          class: "form-input",
+          min: 1,
+          required: true %>
+      <% if work_order.errors[:order_qty].any? %>
+        <p class="form-error"><%= work_order.errors[:order_qty].first %></p>
+      <% end %>
+    </div>
+
+    <!-- 계획일 -->
+    <div>
+      <%= f.label :plan_date, "계획일", class: "form-label" %>
+      <%= f.date_field :plan_date,
+          class: "form-input",
+          required: true %>
+      <% if work_order.errors[:plan_date].any? %>
+        <p class="form-error"><%= work_order.errors[:plan_date].first %></p>
+      <% end %>
+    </div>
+
+    <!-- 우선순위 -->
+    <div>
+      <%= f.label :priority, "우선순위", class: "form-label" %>
+      <%= f.select :priority,
+          options_for_select((1..10).map { |i| [i, i] }, work_order.priority || 5),
+          {},
+          class: "form-input" %>
+      <p class="text-xs text-gray-500 mt-1">1(낮음) ~ 10(높음)</p>
+      <% if work_order.errors[:priority].any? %>
+        <p class="form-error"><%= work_order.errors[:priority].first %></p>
+      <% end %>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="flex justify-end space-x-3 pt-4">
+      <%= link_to "취소", productions_work_orders_path, class: "btn btn-outline" %>
+      <%= f.submit work_order.new_record? ? "등록" : "수정", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
