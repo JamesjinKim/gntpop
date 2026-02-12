@@ -64,9 +64,9 @@
         <div>
           <dt class="text-sm font-medium text-gray-500">작업자</dt>
           <dd class="mt-1 text-sm text-gray-900">
-            <%= @production_result.worker&.worker_name || "-" %>
+            <%= @production_result.worker&.name || "-" %>
             <% if @production_result.worker %>
-              <span class="text-gray-500">(<%= @production_result.worker.worker_code %>)</span>
+              <span class="text-gray-500">(<%= @production_result.worker.employee_number %>)</span>
             <% end %>
           </dd>
         </div>
@@ -163,10 +163,10 @@
               <% @defect_records.each do |record| %>
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <%= record.defect_code.defect_code %>
+                    <%= record.defect_code.code %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    <%= record.defect_code.defect_name %>
+                    <%= record.defect_code.name %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-red-600">
                     <%= number_with_delimiter(record.defect_qty) %>
