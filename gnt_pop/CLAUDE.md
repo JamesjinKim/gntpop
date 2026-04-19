@@ -130,6 +130,7 @@ Manufacturing POP (Point of Production) system for GnT (converter, transformer/i
 - `docs/PRD.md` — 1-page product overview
 - `docs/factory-box-strategy.md` — Strategy v5 (ground truth)
 - `docs/factory-box-TODO.md` — Agile execution checklist (current state, read this for next actions)
+- `docs/learning/` — Concept learning notes (e.g., `multitenancy.md`)
 - `docs/archive/2026-02/` — GnT v1 PDCA history (lot-tracking, monitoring, production-tracking, quality-management)
 
 **Repository strategy**: In-place single-branch (2026-04-19 confirmed). `main` is the pivot work branch. GnT v1 reference frozen at `gnt-v1-final` tag (commit `6f3b854`). 1-person YAGNI — no separate `factory-box-main` branch.
