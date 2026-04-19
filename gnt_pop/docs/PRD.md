@@ -70,7 +70,7 @@
 
 ## 8. Execution Approach
 
-- **저장소 전략 (In-place)**: 현 `gnt_pop` 저장소 유지. `gnt-v1-final` 태그로 GnT v1 동결 지점 표시, 피벗 작업은 `factory-box-main` 브랜치에서 진행 (폴더/저장소 복제 없음)
+- **저장소 전략 (In-place 단일 브랜치)**: 현 `gnt_pop` 저장소 유지. `gnt-v1-final` 태그(커밋 6f3b854)로 GnT v1 동결, 이후 피벗 작업은 `main`에서 계속 (1인 프로젝트 YAGNI, 별도 브랜치 생략)
 - **애자일 Sprint**: 0(환경 정리) → 1(멀티테넌시) → 2(WDAQ 시뮬) → 3(POP×WDAQ Level α) → 4(알림, 필요 시)
 - **설계 원칙**: 필요해지면 코드와 함께 작성, 선제 ADR 금지 (메모리 `feedback_avoid_over_engineering.md`)
 

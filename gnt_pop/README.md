@@ -1,6 +1,6 @@
 # GnT POP (Point of Production) System
 
-> **상태**: Factory Box Track 1 피벗 진행 중 (In-place). GnT v1은 `gnt-v1-final` 태그로 동결, 피벗 작업은 `factory-box-main` 브랜치에서 진행.
+> **상태**: Factory Box Track 1 피벗 진행 중 (In-place 단일 브랜치). GnT v1은 `gnt-v1-final` 태그(커밋 6f3b854)로 동결, 이후 작업은 `main`에서 계속.
 > 상세: [PRD](docs/PRD.md) · [전략](docs/factory-box-strategy.md) · [실행 TODO](docs/factory-box-TODO.md)
 
 (주)지앤티 컨버터/트랜스포머 제조 생산현장 관리 시스템. 기준정보·생산관리·품질관리·실시간 모니터링을 통합 제공.
