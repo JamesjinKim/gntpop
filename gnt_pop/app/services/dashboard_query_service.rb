@@ -13,7 +13,10 @@ class DashboardQueryService
   # 일일 생산 목표량 (향후 설정 테이블로 이관 가능)
   DEFAULT_DAILY_TARGET = 200
 
-  def initialize(date: Date.current)
+  # @param tenant [Tenant] 대상 테넌트 (필수, 멀티테넌시 격리)
+  # @param date [Date] 기준 일자
+  def initialize(tenant:, date: Date.current)
+    @tenant = tenant
     @date = date
   end
 
@@ -32,11 +35,11 @@ class DashboardQueryService
   # 공정별 진행 상황 데이터
   # @return [Array<Hash>] 공정명, 진행률, 목표, 실적, 상태
   def process_data
-    ManufacturingProcess.active.ordered.map do |process|
-      results = process.production_results.where(created_at: @date.all_day)
+    ManufacturingProcess.for_tenant(@tenant).active.ordered.map do |process|
+      results = process.production_results.for_tenant(@tenant).where(created_at: @date.all_day)
       actual = results.sum(:good_qty)
       target = daily_target_for(process)
-      equipment_running = process.equipments.where(status: :run).exists?
+      equipment_running = process.equipments.for_tenant(@tenant).where(status: :run).exists?
 
       {
         name: process.process_name,
@@ -51,7 +54,7 @@ class DashboardQueryService
   # 설비 상태 데이터
   # @return [Array<Hash>] 설비명, 상태, 가동 시간
   def equipment_data
-    Equipment.active.includes(:manufacturing_process).map do |equipment|
+    Equipment.for_tenant(@tenant).active.includes(:manufacturing_process).map do |equipment|
       {
         name: equipment.equipment_name,
         status: equipment.status,
@@ -64,7 +67,7 @@ class DashboardQueryService
   # @param limit [Integer] 조회할 개수 (기본값: 5)
   # @return [Array<Hash>] 작업지시, 공정, 수량, 시각
   def recent_results(limit: 5)
-    ProductionResult
+    ProductionResult.for_tenant(@tenant)
       .includes(:work_order, :manufacturing_process)
       .order(created_at: :desc)
       .limit(limit)
@@ -94,9 +97,9 @@ class DashboardQueryService
   # 생산 KPI 계산
   # @return [Hash] 실적, 목표, 달성률
   def production_kpi
-    today_results = ProductionResult.where(created_at: @date.all_day)
+    today_results = ProductionResult.for_tenant(@tenant).where(created_at: @date.all_day)
     actual = today_results.sum(:good_qty)
-    target = WorkOrder.where(plan_date: @date).sum(:order_qty)
+    target = WorkOrder.for_tenant(@tenant).where(plan_date: @date).sum(:order_qty)
 
     # 목표가 0이면 달성률 0으로 표시 (1로 대체 시 비정상 달성률 발생 방지)
     rate = target.positive? ? calculate_achievement_rate(actual, target) : 0.0
@@ -111,7 +114,7 @@ class DashboardQueryService
   # 불량 KPI 계산
   # @return [Hash] 불량률, 목표불량률, 양품수, 불량수
   def defect_kpi
-    today_results = ProductionResult.where(created_at: @date.all_day)
+    today_results = ProductionResult.for_tenant(@tenant).where(created_at: @date.all_day)
     good_count = today_results.sum(:good_qty)
     defect_count = today_results.sum(:defect_qty)
     total = good_count + defect_count
@@ -130,7 +133,7 @@ class DashboardQueryService
   # 설비 KPI 계산
   # @return [Hash] 가동률, 가동중, 대기, 고장, 점검 설비 수
   def equipment_kpi
-    active_equipments = Equipment.active
+    active_equipments = Equipment.for_tenant(@tenant).active
     running_count = active_equipments.where(status: :run).count
     total_count = active_equipments.count
 
@@ -148,10 +151,11 @@ class DashboardQueryService
   # 작업지시 KPI 계산
   # @return [Hash] 진행중, 예정, 완료 작업지시 수
   def work_order_kpi
+    tenant_scope = WorkOrder.for_tenant(@tenant)
     {
-      in_progress: WorkOrder.where(status: :in_progress).count,
-      planned: WorkOrder.where(status: :planned).count,
-      completed: WorkOrder.where(status: :completed, updated_at: @date.all_day).count
+      in_progress: tenant_scope.where(status: :in_progress).count,
+      planned: tenant_scope.where(status: :planned).count,
+      completed: tenant_scope.where(status: :completed, updated_at: @date.all_day).count
     }
   end
 
@@ -167,7 +171,7 @@ class DashboardQueryService
   # @param equipment [Equipment] 설비
   # @return [String] 경과 시간 문자열 (예: "2h 30m", "45m", "대기중")
   def equipment_elapsed_time(equipment)
-    last_result = equipment.production_results.order(created_at: :desc).first
+    last_result = equipment.production_results.for_tenant(@tenant).order(created_at: :desc).first
     return "대기중" unless last_result&.start_time
 
     elapsed_seconds = Time.current - last_result.start_time

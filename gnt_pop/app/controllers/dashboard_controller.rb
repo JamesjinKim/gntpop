@@ -1,6 +1,6 @@
 class DashboardController < ApplicationController
   def index
-    service = DashboardQueryService.new(date: Date.current)
+    service = DashboardQueryService.new(tenant: Current.tenant, date: Date.current)
     @kpi = service.kpi_data
     @processes = service.process_data
     @equipments = service.equipment_data
@@ -12,7 +12,8 @@ class DashboardController < ApplicationController
 
   # TODO: Notification 모델 생성 후 실제 데이터로 대체
   def load_notifications
-    recent_work_orders = WorkOrder.where(status: :completed)
+    recent_work_orders = WorkOrder.for_tenant(Current.tenant)
+                                  .where(status: :completed)
                                   .order(updated_at: :desc)
                                   .limit(3)
 
@@ -24,7 +25,7 @@ class DashboardController < ApplicationController
       }
     end
 
-    pm_equipments = Equipment.where(status: :pm)
+    pm_equipments = Equipment.for_tenant(Current.tenant).where(status: :pm)
     pm_equipments.each do |eq|
       notifications << {
         type: "warning",

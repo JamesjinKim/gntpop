@@ -6,7 +6,7 @@ class Monitoring::ProductionBoardController < ApplicationController
   layout "fullscreen"
 
   def index
-    service = DashboardQueryService.new(date: Date.current)
+    service = DashboardQueryService.new(tenant: Current.tenant, date: Date.current)
     @kpi = service.kpi_data
     @processes = service.process_data
     @recent_results = service.recent_results(limit: 10)

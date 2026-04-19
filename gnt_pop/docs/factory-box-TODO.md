@@ -27,6 +27,11 @@
 - [x] **Wave 2 완료 (2026-04-19)**: `WorkOrder`, `ProductionResult`, `DefectRecord`
   - DefectRecord는 parent(ProductionResult)의 tenant 상속 callback 채택
   - WorkOrders/ProductionResults/LotTracking 컨트롤러 스코핑 + form 옵션 for_tenant 적용
+- [x] **Wave 2.5 완료 (2026-04-19, 긴급)**: Dashboard/Monitoring 서비스 tenant 스코핑
+  - `DashboardQueryService.new(tenant:, date:)` + 모든 쿼리에 for_tenant
+  - `EquipmentStatusService.new(tenant:)` + summary/filtered_list 스코핑
+  - DashboardController, Monitoring::ProductionBoard/EquipmentStatus 컨트롤러에서 Current.tenant 전달
+  - **발견 경위**: ACME 로그인 시 대시보드에 GnT 데이터 섞여 보임 → Wave 1/2에서 컨트롤러만 수정하고 Service Objects 누락했던 갭 보완
 - [ ] Wave 3 (나머지 4개): `DefectCode`, `InspectionResult`, `InspectionItem`, `LotSensorSnapshot`
 - [x] `User`에 tenant_id, `Current.tenant` 세팅 (ApplicationController before_action)
 - [!] acts_as_tenant gem 도입 여부 — Wave 2 완료 시점 재평가: 패턴 단순 반복으로 **수동 유지 계속** 판단. Wave 3 완료 후 최종

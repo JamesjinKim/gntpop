@@ -9,18 +9,24 @@
 #   equipments = service.filtered_list(status: "run")
 #   lot = service.recent_lot(equipment)
 class EquipmentStatusService
-  # 센서 데이터 기반 설비 상태 자동 업데이트
+  # @param tenant [Tenant] 대상 테넌트 (필수, 멀티테넌시 격리)
+  def initialize(tenant:)
+    @tenant = tenant
+  end
+
+  # 센서 데이터 기반 설비 상태 자동 업데이트 (센서 수신 시점 tenant 기준)
   # @param equipment_id [Integer] 설비 ID
   # @param sensor_data [Hash] 센서 데이터
-  def self.auto_update_from_sensor(equipment_id, sensor_data)
-    equipment = Equipment.find(equipment_id)
+  # @param tenant [Tenant] 테넌트 (이 설비가 속한 테넌트여야 함)
+  def self.auto_update_from_sensor(equipment_id, sensor_data, tenant:)
+    equipment = Equipment.for_tenant(tenant).find(equipment_id)
     equipment.update_status_from_sensor(sensor_data)
   end
 
   # 설비 상태별 수 요약
   # @return [Hash] { run: 3, idle: 2, down: 1, pm: 0, total: 6 }
   def summary
-    active = Equipment.active
+    active = Equipment.for_tenant(@tenant).active
     {
       run: active.where(status: :run).count,
       idle: active.where(status: :idle).count,
@@ -34,7 +40,7 @@ class EquipmentStatusService
   # @param status [String, nil] 필터 상태 (nil이면 전체)
   # @return [ActiveRecord::Relation<Equipment>]
   def filtered_list(status: nil)
-    scope = Equipment.active.includes(:manufacturing_process)
+    scope = Equipment.for_tenant(@tenant).active.includes(:manufacturing_process)
     scope = scope.where(status: status) if status.present?
     scope.order(:equipment_name)
   end
@@ -43,7 +49,7 @@ class EquipmentStatusService
   # @param equipment [Equipment] 설비
   # @return [String, nil] 최근 LOT 번호 또는 nil
   def recent_lot(equipment)
-    equipment.production_results
+    equipment.production_results.for_tenant(@tenant)
              .order(created_at: :desc)
              .limit(1)
              .pick(:lot_no)
