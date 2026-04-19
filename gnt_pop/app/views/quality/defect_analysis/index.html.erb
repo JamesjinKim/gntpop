@@ -20,6 +20,12 @@
     </div>
   </div>
 
+  <%# 조회 기간 안내 — 모든 요약/차트 지표가 이 기간 기준으로 집계됨 %>
+  <p class="text-sm text-gray-600">
+    📅 조회 기간: <strong><%= @from.strftime("%Y-%m-%d") %></strong> ~ <strong><%= @to.strftime("%Y-%m-%d") %></strong>
+    <span class="text-gray-400">(<%= (@to - @from).to_i + 1 %>일간)</span>
+  </p>
+
   <%# 요약 카드 %>
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
     <div class="card">

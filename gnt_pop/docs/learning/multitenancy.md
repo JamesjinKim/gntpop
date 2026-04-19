@@ -262,6 +262,19 @@ Product.create!(...)  # ActiveRecord::RecordInvalid — tenant is required
 ### 🚨 실수 4: 마이그레이션에서 기존 행 tenant_id 안 채우고 NOT NULL 전환
 → 에러. 반드시 3단계(nullable add → backfill → NOT NULL) 준수.
 
+### 🚨 실수 5: 화면 간 숫자 불일치를 테넌시 버그로 오해
+**실제 사례 (2026-04-20)**: ACME 로그인 시 대시보드 "오늘의 생산량=0", 불량분석 "총 생산수량=53". 테넌시 누출 의심 → 실측 결과 **기간 범위 차이**.
+
+| 화면 | 기본 기간 | 용도 |
+|---|---|---|
+| 대시보드 | 오늘 하루 (`Date.current.all_day`) | 운영 현황 모니터링 |
+| 불량분석 | 최근 30일 | 기간 추세 분석 |
+| SPC | 최근 30일 | 관리도 |
+
+→ **테넌시가 올바르게 동작해도 화면마다 집계 기간이 다르면 숫자가 다르게 나옴**. 이는 **버그가 아니라 설계**. 테넌시 격리 확인 시 혼동하지 말 것.
+
+**해결**: 각 화면에 기간 라벨 명시 (`docs/learning/multitenancy.md` 기록 당시 `quality/defect_analysis`에 "조회 기간: YYYY-MM-DD ~ YYYY-MM-DD (N일간)" 라벨 추가). 테넌시 격리 검증 시에는 **같은 기간으로 맞춰서** 비교할 것.
+
 ## 11. 관련 파일 빠른 참조
 
 - 모델: `app/models/tenant.rb`, `app/models/user.rb`, `app/models/product.rb`, `app/models/current.rb`
