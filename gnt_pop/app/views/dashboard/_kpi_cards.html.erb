@@ -25,7 +25,7 @@
         <span class="font-semibold text-gnt-red"><%= @kpi[:production][:rate] %>%</span>
       </div>
       <div class="w-full bg-slate-100 rounded-full h-2">
-        <div class="bg-gradient-to-r from-gnt-red to-rose-400 rounded-full h-2 transition-all duration-500" style="width: <%= @kpi[:production][:rate] %>%"></div>
+        <div class="bg-gradient-to-r from-gnt-red to-rose-400 rounded-full h-2 transition-all duration-500" style="width: <%= [@kpi[:production][:rate], 100].min %>%"></div>
       </div>
     </div>
   </div>

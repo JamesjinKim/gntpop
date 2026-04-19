@@ -24,7 +24,8 @@ class DashboardQueryService
       production: production_kpi,
       defect: defect_kpi,
       equipment: equipment_kpi,
-      work_order: work_order_kpi
+      work_order: work_order_kpi,
+      sensor: sensor_kpi
     }
   end
 
@@ -79,6 +80,17 @@ class DashboardQueryService
 
   private
 
+  # 센서 KPI (Layer 1 구현 전 기본값 반환)
+  # @return [Hash] 센서 노드 현황
+  def sensor_kpi
+    {
+      active_nodes: 0,
+      total_nodes: 0,
+      safety_status: "not_configured",
+      sensor_uptime_rate: 0.0
+    }
+  end
+
   # 생산 KPI 계산
   # @return [Hash] 실적, 목표, 달성률
   def production_kpi
@@ -86,13 +98,13 @@ class DashboardQueryService
     actual = today_results.sum(:good_qty)
     target = WorkOrder.where(plan_date: @date).sum(:order_qty)
 
-    # 0으로 나누기 방지
-    target = 1 if target.zero?
+    # 목표가 0이면 달성률 0으로 표시 (1로 대체 시 비정상 달성률 발생 방지)
+    rate = target.positive? ? calculate_achievement_rate(actual, target) : 0.0
 
     {
       actual: actual,
       target: target,
-      rate: calculate_achievement_rate(actual, target)
+      rate: rate
     }
   end
 
@@ -109,6 +121,7 @@ class DashboardQueryService
     {
       rate: defect_rate,
       target: 2.0, # 목표 불량률 2%
+      trend: 0.0, # TODO: 전일 대비 불량률 변화 계산
       good_count: good_count,
       defect_count: defect_count
     }

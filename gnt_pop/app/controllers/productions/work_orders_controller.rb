@@ -79,6 +79,7 @@ class Productions::WorkOrdersController < ApplicationController
   def complete
     if @work_order.in_progress?
       @work_order.completed!
+      capture_end_snapshots
       redirect_to productions_work_orders_path, notice: "작업이 완료되었습니다."
     else
       redirect_to productions_work_orders_path, alert: "진행중 상태의 작업지시만 완료할 수 있습니다."
@@ -121,5 +122,12 @@ class Productions::WorkOrdersController < ApplicationController
 
   def redirect_to_index_with_alert
     redirect_to productions_work_orders_path, alert: "계획 상태의 작업지시만 수정/삭제할 수 있습니다."
+  end
+
+  # 작업지시 완료 시 모든 LOT에 end 스냅샷 생성
+  def capture_end_snapshots
+    @work_order.production_results.find_each do |result|
+      LotSensorSnapshotService.capture_end!(result)
+    end
   end
 end

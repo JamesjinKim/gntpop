@@ -38,6 +38,6 @@
     </div>
   </div>
   <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-    <div class="h-2 rounded-full transition-all duration-500 <%= bar_color %>" style="width: <%= process[:progress] %>%"></div>
+    <div class="h-2 rounded-full transition-all duration-500 <%= bar_color %>" style="width: <%= [process[:progress], 100].min %>%"></div>
   </div>
 </div>

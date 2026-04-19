@@ -7,6 +7,7 @@ class ProductionResult < ApplicationRecord
   belongs_to :equipment, optional: true
   belongs_to :worker, optional: true
   has_many :defect_records, dependent: :destroy
+  has_many :lot_sensor_snapshots, dependent: :destroy
 
   # Validations
   validates :lot_no, presence: true, uniqueness: true
@@ -19,8 +20,11 @@ class ProductionResult < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[work_order manufacturing_process equipment worker defect_records]
+    %w[work_order manufacturing_process equipment worker defect_records lot_sensor_snapshots]
   end
+
+  # Callbacks
+  after_create :capture_sensor_snapshot
 
   # Scopes
   scope :by_date, ->(date) { where(created_at: date.all_day) if date.present? }
@@ -38,5 +42,12 @@ class ProductionResult < ApplicationRecord
   def defect_rate
     return 0 if total_qty.zero?
     (defect_qty.to_f / total_qty * 100).round(2)
+  end
+
+  private
+
+  # LOT 생성 시 센서 스냅샷 자동 캡처
+  def capture_sensor_snapshot
+    LotSensorSnapshotService.capture!(self, snapshot_type: "start")
   end
 end

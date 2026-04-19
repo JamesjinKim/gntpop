@@ -50,6 +50,14 @@ Rails.application.routes.draw do
     resources :defect_codes
   end
 
+  # API 라우트 (IoT 센서 연동)
+  namespace :api do
+    namespace :v1 do
+      resources :sensor_readings, only: [:create]
+      resources :lot_snapshots, only: [:create, :index]
+    end
+  end
+
   # Defines the root path route ("/")
   root "dashboard#index"
 end

@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_12_020810) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_011646) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "defect_codes", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
@@ -69,6 +72,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_020810) do
     t.integer "worker_id", null: false
     t.index ["manufacturing_process_id"], name: "index_inspection_results_on_manufacturing_process_id"
     t.index ["worker_id"], name: "index_inspection_results_on_worker_id"
+  end
+
+  create_table "lot_sensor_snapshots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "lot_no", null: false
+    t.bigint "production_result_id", null: false
+    t.jsonb "safety_data", default: {}
+    t.jsonb "sensor_data", default: {}
+    t.string "snapshot_type"
+    t.jsonb "statistics", default: {}
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_lot_sensor_snapshots_on_created_at"
+    t.index ["lot_no", "snapshot_type"], name: "index_lot_sensor_snapshots_on_lot_no_and_snapshot_type"
+    t.index ["production_result_id"], name: "index_lot_sensor_snapshots_on_production_result_id"
   end
 
   create_table "manufacturing_processes", force: :cascade do |t|
@@ -163,6 +180,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_020810) do
   add_foreign_key "inspection_items", "inspection_results"
   add_foreign_key "inspection_results", "manufacturing_processes"
   add_foreign_key "inspection_results", "workers"
+  add_foreign_key "lot_sensor_snapshots", "production_results"
   add_foreign_key "production_results", "equipments"
   add_foreign_key "production_results", "manufacturing_processes"
   add_foreign_key "production_results", "work_orders"

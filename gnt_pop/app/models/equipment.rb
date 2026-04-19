@@ -31,6 +31,12 @@ class Equipment < ApplicationRecord
   scope :active, -> { where(is_active: true) }
   scope :by_status, ->(status) { where(status: status) if status.present? }
 
+  # 센서 데이터 기반 설비 상태 추론 (Layer 1 연계 준비)
+  def update_status_from_sensor(sensor_data)
+    new_status = EquipmentStatusInferenceService.infer(sensor_data)
+    update!(status: new_status) if status != new_status.to_s
+  end
+
   # 설비 상태 한글명 반환
   def status_i18n
     {

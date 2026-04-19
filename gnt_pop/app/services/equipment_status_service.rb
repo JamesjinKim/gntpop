@@ -9,6 +9,14 @@
 #   equipments = service.filtered_list(status: "run")
 #   lot = service.recent_lot(equipment)
 class EquipmentStatusService
+  # 센서 데이터 기반 설비 상태 자동 업데이트
+  # @param equipment_id [Integer] 설비 ID
+  # @param sensor_data [Hash] 센서 데이터
+  def self.auto_update_from_sensor(equipment_id, sensor_data)
+    equipment = Equipment.find(equipment_id)
+    equipment.update_status_from_sensor(sensor_data)
+  end
+
   # 설비 상태별 수 요약
   # @return [Hash] { run: 3, idle: 2, down: 1, pm: 0, total: 6 }
   def summary
