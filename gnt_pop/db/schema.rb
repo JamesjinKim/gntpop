@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_011646) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_19_223634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -126,9 +126,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_011646) do
     t.integer "product_group", null: false
     t.string "product_name", null: false
     t.text "spec"
+    t.bigint "tenant_id", null: false
     t.string "unit", default: "EA"
     t.datetime "updated_at", null: false
     t.index ["product_code"], name: "index_products_on_product_code", unique: true
+    t.index ["tenant_id"], name: "index_products_on_tenant_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -140,12 +142,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_011646) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "tenants", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_tenants_on_code", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "password_digest", null: false
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
   create_table "work_orders", force: :cascade do |t|
@@ -185,7 +198,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_011646) do
   add_foreign_key "production_results", "manufacturing_processes"
   add_foreign_key "production_results", "work_orders"
   add_foreign_key "production_results", "workers"
+  add_foreign_key "products", "tenants"
   add_foreign_key "sessions", "users"
+  add_foreign_key "users", "tenants"
   add_foreign_key "work_orders", "products"
   add_foreign_key "workers", "manufacturing_processes"
 end

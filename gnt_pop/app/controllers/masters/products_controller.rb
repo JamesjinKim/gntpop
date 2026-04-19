@@ -8,7 +8,7 @@ module Masters
 
     # GET /masters/products
     def index
-      @q = Product.ransack(params[:q])
+      @q = Product.for_tenant(Current.tenant).ransack(params[:q])
       @pagy, @products = pagy(@q.result.order(created_at: :desc))
     end
 
@@ -52,7 +52,7 @@ module Masters
     private
 
     def set_product
-      @product = Product.find(params[:id])
+      @product = Product.for_tenant(Current.tenant).find(params[:id])
     end
 
     def product_params

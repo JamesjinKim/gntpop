@@ -2,6 +2,18 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+# ============================================================
+# 테넌트 (Factory Box 멀티테넌시 Level 1)
+# ============================================================
+# GnT는 내부 레퍼런스 테넌트 #1 (유료 고객 아님)
+# 다른 테넌트 추가 시 이 위치에 append
+
+gnt_tenant = Tenant.find_or_create_by!(code: "gnt") do |t|
+  t.name = "주식회사 지앤티"
+  t.active = true
+  puts "Created tenant: gnt"
+end
+
 # 환경변수에서 초기 사용자 정보를 가져옵니다
 # 설정 방법:
 #   export ADMIN_EMAIL="admin@example.com"
@@ -9,29 +21,34 @@
 #
 # 또는 .env 파일에 설정 (dotenv gem 사용 시)
 
-# 관리자 사용자 생성
+# 관리자 사용자 생성 (GnT 테넌트 소속)
 admin_email = ENV.fetch("ADMIN_EMAIL", "admin@gnt.co.kr")
 admin_password = ENV.fetch("ADMIN_PASSWORD") { Rails.env.development? ? "password123" : nil }
 
 if admin_password.present?
   User.find_or_create_by!(email_address: admin_email) do |user|
     user.password = admin_password
+    user.tenant = gnt_tenant
     puts "Created admin user: #{admin_email}"
   end
 else
   puts "Skipping admin user creation: ADMIN_PASSWORD environment variable not set"
 end
 
-# 개발 환경 추가 사용자
+# 개발 환경 추가 사용자 (GnT 테넌트 소속)
 if Rails.env.development?
   dev_email = ENV.fetch("DEV_EMAIL", "developer@gnt.co.kr")
   dev_password = ENV.fetch("DEV_PASSWORD", "dev123456")
 
   User.find_or_create_by!(email_address: dev_email) do |user|
     user.password = dev_password
+    user.tenant = gnt_tenant
     puts "Created developer user: #{dev_email}"
   end
 end
+
+# 멀티테넌시 컨텍스트 설정 — 아래 마스터 데이터는 GnT 테넌트로 생성됨
+Current.tenant = gnt_tenant
 
 # ============================================================
 # 생산 마스터 데이터

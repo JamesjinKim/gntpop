@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  belongs_to :tenant
   has_secure_password
   has_many :sessions, dependent: :destroy
 

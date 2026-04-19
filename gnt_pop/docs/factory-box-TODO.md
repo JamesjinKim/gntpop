@@ -19,13 +19,26 @@
 - [x] `gnt-v1-final` 태그 부착 → 커밋 `6f3b854` (GnT v1 마지막 버그수정)
 - [x] ~~`factory-box-main` 브랜치 생성~~ → **옵션 A 채택**: 단일 브랜치(`main`)에서 계속 진행. 1인 프로젝트 YAGNI. GnT v1 복귀는 `gnt-v1-final` 태그로 가능
 
-## Sprint 1 — 멀티테넌시(다중임대) 최소 구현 (진행률 0%)
-- [ ] `Tenant` 모델 + 마이그레이션 (code, name) — `app/models/tenant.rb` 없음
-- [ ] GnT 기본 테넌트 시드 (id=1) — 없음
-- [ ] 작게 시작: `Product` 1개에만 `tenant_id` 추가 + `default_scope` + 테스트 — schema에 tenant 컬럼 0건
-- [ ] 작동하면 나머지 도메인 테이블로 확산 (한 번에 전부 X, 2~3개씩)
-- [ ] `User`에 tenant_id, 로그인 시 `Current.tenant` 세팅 — `Current` 클래스는 있으나 `tenant` 속성 없음
-- [!] acts_as_tenant gem 도입 여부는 **수동으로 2~3개 해본 뒤 결정** — 현재 Gemfile 미도입
+## Sprint 1 — 멀티테넌시(다중임대) 최소 구현 (진행률 ~60%, 1차 이터레이션 완료)
+- [x] `Tenant` 모델 + 마이그레이션 (code unique, name, active) — 2026-04-19
+- [x] GnT 기본 테넌트 시드 (id=1, code: "gnt", name: "주식회사 지앤티")
+- [x] 작게 시작: `Product`에 `tenant_id` + **명시적 `for_tenant` scope** + before_validation callback + 테스트
+- [ ] 나머지 도메인 테이블로 확산 (2~3개씩, 다음 이터레이션)
+  - 후보: ManufacturingProcess, Equipment, Worker, DefectCode, WorkOrder, ProductionResult, DefectRecord, InspectionResult, InspectionItem
+- [x] `User`에 tenant_id, `Current.tenant` 세팅 (ApplicationController before_action)
+- [!] acts_as_tenant gem 도입 여부 — Product 1개 완료. 2~3개 수동 확산 후 재평가
+
+**채택된 설계 (2026-04-19 확정)**:
+- 스코핑: **명시적 `for_tenant(Current.tenant)` scope** (default_scope 미사용). 2~3개 경험 후 재평가
+- User ↔ Tenant: **1:1** (`User.belongs_to :tenant`)
+- 자동 할당: **before_validation callback** (`Product#assign_current_tenant`)
+- Tenant code: **"gnt"** (영소문자/숫자/하이픈/언더바만 허용)
+- 마이그레이션: 3-in-1 안전 패턴 (add nullable → backfill → NOT NULL + FK on_delete: :restrict)
+
+**알려진 테스트 이슈 (Sprint 1 범위 외, 기존 결함)**:
+- `DashboardControllerTest#test_should_render_process_status_section` 실패
+  - 원인: `test/fixtures/manufacturing_processes.yml` 부재로 공정 렌더링 0개
+  - 조치: 후속 이슈 (fixture 보강 또는 테스트 재설계)
 
 ## Sprint 2 — WDAQ 시뮬레이터 (진행률 ~20%, ⚠️ 스키마 방향 재합의 필요)
 
