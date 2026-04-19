@@ -11,8 +11,12 @@ class Equipment < ApplicationRecord
   }
 
   # Associations
+  belongs_to :tenant
   belongs_to :manufacturing_process
   has_many :production_results, dependent: :restrict_with_error
+
+  # Callbacks — 생성 시 Current.tenant 자동 할당
+  before_validation :assign_current_tenant, on: :create
 
   # Validations
   validates :equipment_code, presence: true, uniqueness: true
@@ -20,16 +24,18 @@ class Equipment < ApplicationRecord
 
   # Ransack
   def self.ransackable_attributes(auth_object = nil)
-    %w[equipment_code equipment_name status manufacturing_process_id location is_active created_at updated_at]
+    %w[equipment_code equipment_name status manufacturing_process_id location is_active tenant_id created_at updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[manufacturing_process production_results]
+    %w[manufacturing_process production_results tenant]
   end
 
   # Scopes
   scope :active, -> { where(is_active: true) }
   scope :by_status, ->(status) { where(status: status) if status.present? }
+  # 멀티테넌시 격리 — 명시적 호출 필수
+  scope :for_tenant, ->(t) { where(tenant: t) }
 
   # 센서 데이터 기반 설비 상태 추론 (Layer 1 연계 준비)
   def update_status_from_sensor(sensor_data)
@@ -45,5 +51,11 @@ class Equipment < ApplicationRecord
       "down" => "고장",
       "pm" => "예방정비"
     }[status] || status
+  end
+
+  private
+
+  def assign_current_tenant
+    self.tenant_id ||= Current.tenant&.id
   end
 end

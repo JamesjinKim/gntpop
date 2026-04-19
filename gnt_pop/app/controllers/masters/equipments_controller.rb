@@ -8,7 +8,7 @@ module Masters
 
     # GET /masters/equipments
     def index
-      @q = Equipment.ransack(params[:q])
+      @q = Equipment.for_tenant(Current.tenant).ransack(params[:q])
       @pagy, @equipments = pagy(@q.result.includes(:manufacturing_process).order(created_at: :desc))
     end
 
@@ -52,7 +52,7 @@ module Masters
     private
 
     def set_equipment
-      @equipment = Equipment.find(params[:id])
+      @equipment = Equipment.for_tenant(Current.tenant).find(params[:id])
     end
 
     def equipment_params

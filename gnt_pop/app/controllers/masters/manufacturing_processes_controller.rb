@@ -8,7 +8,7 @@ module Masters
 
     # GET /masters/manufacturing_processes
     def index
-      @q = ManufacturingProcess.ransack(params[:q])
+      @q = ManufacturingProcess.for_tenant(Current.tenant).ransack(params[:q])
       @pagy, @manufacturing_processes = pagy(@q.result.order(:process_order))
     end
 
@@ -52,7 +52,7 @@ module Masters
     private
 
     def set_manufacturing_process
-      @manufacturing_process = ManufacturingProcess.find(params[:id])
+      @manufacturing_process = ManufacturingProcess.for_tenant(Current.tenant).find(params[:id])
     end
 
     def manufacturing_process_params

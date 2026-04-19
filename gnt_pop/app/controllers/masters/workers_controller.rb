@@ -8,7 +8,7 @@ module Masters
 
     # GET /masters/workers
     def index
-      @q = Worker.ransack(params[:q])
+      @q = Worker.for_tenant(Current.tenant).ransack(params[:q])
       @pagy, @workers = pagy(@q.result.includes(:manufacturing_process).order(created_at: :desc))
     end
 
@@ -52,7 +52,7 @@ module Masters
     private
 
     def set_worker
-      @worker = Worker.find(params[:id])
+      @worker = Worker.for_tenant(Current.tenant).find(params[:id])
     end
 
     def worker_params

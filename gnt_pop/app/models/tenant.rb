@@ -4,6 +4,9 @@
 class Tenant < ApplicationRecord
   has_many :users, dependent: :restrict_with_error
   has_many :products, dependent: :restrict_with_error
+  has_many :manufacturing_processes, dependent: :restrict_with_error
+  has_many :equipments, dependent: :restrict_with_error
+  has_many :workers, dependent: :restrict_with_error
 
   validates :code, presence: true, uniqueness: true, format: { with: /\A[a-z0-9_-]+\z/, message: "영소문자/숫자/하이픈/언더바만 허용" }
   validates :name, presence: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_19_223634) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,9 +43,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_223634) do
     t.string "location"
     t.integer "manufacturing_process_id", null: false
     t.integer "status", default: 0
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["equipment_code"], name: "index_equipments_on_equipment_code", unique: true
     t.index ["manufacturing_process_id"], name: "index_equipments_on_manufacturing_process_id"
+    t.index ["tenant_id"], name: "index_equipments_on_tenant_id"
   end
 
   create_table "inspection_items", force: :cascade do |t|
@@ -95,8 +97,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_223634) do
     t.string "process_name", null: false
     t.integer "process_order", null: false
     t.decimal "std_cycle_time", precision: 10, scale: 2
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["process_code"], name: "index_manufacturing_processes_on_process_code", unique: true
+    t.index ["tenant_id"], name: "index_manufacturing_processes_on_tenant_id"
   end
 
   create_table "production_results", force: :cascade do |t|
@@ -182,18 +186,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_223634) do
     t.boolean "is_active", default: true
     t.integer "manufacturing_process_id"
     t.string "name", null: false
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["employee_number"], name: "index_workers_on_employee_number", unique: true
     t.index ["manufacturing_process_id"], name: "index_workers_on_manufacturing_process_id"
+    t.index ["tenant_id"], name: "index_workers_on_tenant_id"
   end
 
   add_foreign_key "defect_records", "defect_codes"
   add_foreign_key "defect_records", "production_results"
   add_foreign_key "equipments", "manufacturing_processes"
+  add_foreign_key "equipments", "tenants"
   add_foreign_key "inspection_items", "inspection_results"
   add_foreign_key "inspection_results", "manufacturing_processes"
   add_foreign_key "inspection_results", "workers"
   add_foreign_key "lot_sensor_snapshots", "production_results"
+  add_foreign_key "manufacturing_processes", "tenants"
   add_foreign_key "production_results", "equipments"
   add_foreign_key "production_results", "manufacturing_processes"
   add_foreign_key "production_results", "work_orders"
@@ -203,4 +211,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_223634) do
   add_foreign_key "users", "tenants"
   add_foreign_key "work_orders", "products"
   add_foreign_key "workers", "manufacturing_processes"
+  add_foreign_key "workers", "tenants"
 end

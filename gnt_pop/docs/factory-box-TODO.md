@@ -19,14 +19,15 @@
 - [x] `gnt-v1-final` 태그 부착 → 커밋 `6f3b854` (GnT v1 마지막 버그수정)
 - [x] ~~`factory-box-main` 브랜치 생성~~ → **옵션 A 채택**: 단일 브랜치(`main`)에서 계속 진행. 1인 프로젝트 YAGNI. GnT v1 복귀는 `gnt-v1-final` 태그로 가능
 
-## Sprint 1 — 멀티테넌시(다중임대) 최소 구현 (진행률 ~60%, 1차 이터레이션 완료)
+## Sprint 1 — 멀티테넌시(다중임대) 최소 구현 (진행률 ~75%, Wave 1 완료)
 - [x] `Tenant` 모델 + 마이그레이션 (code unique, name, active) — 2026-04-19
 - [x] GnT 기본 테넌트 시드 (id=1, code: "gnt", name: "주식회사 지앤티")
-- [x] 작게 시작: `Product`에 `tenant_id` + **명시적 `for_tenant` scope** + before_validation callback + 테스트
-- [ ] 나머지 도메인 테이블로 확산 (2~3개씩, 다음 이터레이션)
-  - 후보: ManufacturingProcess, Equipment, Worker, DefectCode, WorkOrder, ProductionResult, DefectRecord, InspectionResult, InspectionItem
+- [x] 1차: `Product`에 `tenant_id` + **명시적 `for_tenant` scope** + callback
+- [x] **Wave 1 완료 (2026-04-19)**: `ManufacturingProcess`, `Equipment`, `Worker` 확산
+- [ ] Wave 2 (생산 핵심 3개): `WorkOrder`, `ProductionResult`, `DefectRecord`
+- [ ] Wave 3 (나머지 4개): `DefectCode`, `InspectionResult`, `InspectionItem`, `LotSensorSnapshot`
 - [x] `User`에 tenant_id, `Current.tenant` 세팅 (ApplicationController before_action)
-- [!] acts_as_tenant gem 도입 여부 — Product 1개 완료. 2~3개 수동 확산 후 재평가
+- [!] acts_as_tenant gem 도입 여부 — **Wave 1 완료 후 재평가 예정**. 현재 판단: 패턴 단순하고 반복이므로 수동 유지 가능. Wave 2~3 완료 후 최종 결정
 
 **채택된 설계 (2026-04-19 확정)**:
 - 스코핑: **명시적 `for_tenant(Current.tenant)` scope** (default_scope 미사용). 2~3개 경험 후 재평가
