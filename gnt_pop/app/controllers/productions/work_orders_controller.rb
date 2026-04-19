@@ -7,7 +7,7 @@ class Productions::WorkOrdersController < ApplicationController
 
   # 작업지시 목록 조회
   def index
-    @q = WorkOrder.includes(:product).ransack(params[:q])
+    @q = WorkOrder.for_tenant(Current.tenant).includes(:product).ransack(params[:q])
     @pagy, @work_orders = pagy(@q.result.order(created_at: :desc))
   end
 
@@ -99,7 +99,7 @@ class Productions::WorkOrdersController < ApplicationController
   private
 
   def set_work_order
-    @work_order = WorkOrder.find(params[:id])
+    @work_order = WorkOrder.for_tenant(Current.tenant).find(params[:id])
   end
 
   def work_order_params
@@ -107,7 +107,7 @@ class Productions::WorkOrdersController < ApplicationController
   end
 
   def load_products
-    @products = Product.active.order(:product_code)
+    @products = Product.for_tenant(Current.tenant).active.order(:product_code)
   end
 
   # 수정 가능한 상태인지 확인 (계획 상태만 수정 가능)

@@ -7,7 +7,7 @@ class Productions::ProductionResultsController < ApplicationController
 
   # 생산실적 목록 조회
   def index
-    @q = ProductionResult
+    @q = ProductionResult.for_tenant(Current.tenant)
       .includes(:work_order, :manufacturing_process, :equipment, :worker)
       .ransack(params[:q])
     @pagy, @production_results = pagy(@q.result.order(created_at: :desc))
@@ -30,7 +30,7 @@ class Productions::ProductionResultsController < ApplicationController
   # 생산실적 생성
   def create
     @production_result = ProductionResult.new(production_result_params)
-    work_order = WorkOrder.find(@production_result.work_order_id)
+    work_order = WorkOrder.for_tenant(Current.tenant).find(@production_result.work_order_id)
     @production_result.lot_no = LotGeneratorService.new(work_order).call
 
     if @production_result.save
@@ -69,7 +69,7 @@ class Productions::ProductionResultsController < ApplicationController
   private
 
   def set_production_result
-    @production_result = ProductionResult.find(params[:id])
+    @production_result = ProductionResult.for_tenant(Current.tenant).find(params[:id])
   end
 
   def production_result_params
@@ -85,15 +85,17 @@ class Productions::ProductionResultsController < ApplicationController
     )
   end
 
-  # 폼에 필요한 데이터 로드
+  # 폼에 필요한 데이터 로드 (멀티테넌시: 현재 테넌트 범위로 스코핑)
   def load_form_data
-    @work_orders = WorkOrder
+    tenant = Current.tenant
+    @work_orders = WorkOrder.for_tenant(tenant)
       .where(status: [ :planned, :in_progress ])
       .includes(:product)
       .order(created_at: :desc)
-    @processes = ManufacturingProcess.active.ordered
-    @equipments = Equipment.active.order(:equipment_code)
-    @workers = Worker.active.order(:name)
+    @processes = ManufacturingProcess.for_tenant(tenant).active.ordered
+    @equipments = Equipment.for_tenant(tenant).active.order(:equipment_code)
+    @workers = Worker.for_tenant(tenant).active.order(:name)
+    # DefectCode는 Wave 3에서 tenant_id 적용 예정 (현재 전체 공용)
     @defect_codes = DefectCode.active.order(:code)
   end
 

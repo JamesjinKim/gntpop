@@ -10,8 +10,12 @@ class WorkOrder < ApplicationRecord
   }
 
   # Associations
+  belongs_to :tenant
   belongs_to :product
   has_many :production_results, dependent: :restrict_with_error
+
+  # Callbacks — 생성 시 Current.tenant 자동 할당
+  before_validation :assign_current_tenant, on: :create
 
   # Validations
   validates :work_order_code, presence: true, uniqueness: true
@@ -20,17 +24,19 @@ class WorkOrder < ApplicationRecord
 
   # Ransack
   def self.ransackable_attributes(auth_object = nil)
-    %w[work_order_code status plan_date order_qty priority product_id created_at updated_at]
+    %w[work_order_code status plan_date order_qty priority product_id tenant_id created_at updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[product production_results]
+    %w[product production_results tenant]
   end
 
   # Scopes
   scope :by_status, ->(status) { where(status: status) if status.present? }
   scope :by_date, ->(date) { where(plan_date: date) if date.present? }
   scope :recent, -> { order(created_at: :desc) }
+  # 멀티테넌시 격리 — 명시적 호출 필수
+  scope :for_tenant, ->(t) { where(tenant: t) }
 
   # 비즈니스 메서드
 
@@ -48,5 +54,11 @@ class WorkOrder < ApplicationRecord
   def progress_rate
     return 0 if order_qty.zero?
     (total_good_qty.to_f / order_qty * 100).round(1)
+  end
+
+  private
+
+  def assign_current_tenant
+    self.tenant_id ||= Current.tenant&.id
   end
 end

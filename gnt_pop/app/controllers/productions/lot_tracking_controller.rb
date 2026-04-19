@@ -16,7 +16,7 @@ class Productions::LotTrackingController < ApplicationController
       end
     end
 
-    @recent_results = ProductionResult
+    @recent_results = ProductionResult.for_tenant(Current.tenant)
       .includes(work_order: :product, manufacturing_process: {})
       .recent
       .limit(10)
@@ -36,7 +36,7 @@ class Productions::LotTrackingController < ApplicationController
   private
 
   def find_by_lot_no(lot_no)
-    ProductionResult
+    ProductionResult.for_tenant(Current.tenant)
       .includes(
         work_order: :product,
         manufacturing_process: {},

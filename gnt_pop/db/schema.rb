@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,9 +30,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
     t.integer "defect_qty", default: 1
     t.text "description"
     t.integer "production_result_id", null: false
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["defect_code_id"], name: "index_defect_records_on_defect_code_id"
     t.index ["production_result_id"], name: "index_defect_records_on_production_result_id"
+    t.index ["tenant_id"], name: "index_defect_records_on_tenant_id"
   end
 
   create_table "equipments", force: :cascade do |t|
@@ -112,6 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
     t.string "lot_no", null: false
     t.integer "manufacturing_process_id", null: false
     t.datetime "start_time"
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.integer "work_order_id", null: false
     t.integer "worker_id"
@@ -119,6 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
     t.index ["equipment_id"], name: "index_production_results_on_equipment_id"
     t.index ["lot_no"], name: "index_production_results_on_lot_no", unique: true
     t.index ["manufacturing_process_id"], name: "index_production_results_on_manufacturing_process_id"
+    t.index ["tenant_id"], name: "index_production_results_on_tenant_id"
     t.index ["work_order_id"], name: "index_production_results_on_work_order_id"
     t.index ["worker_id"], name: "index_production_results_on_worker_id"
   end
@@ -172,11 +176,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
     t.integer "priority", default: 5
     t.integer "product_id", null: false
     t.integer "status", default: 0
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.string "work_order_code", null: false
     t.index ["plan_date"], name: "index_work_orders_on_plan_date"
     t.index ["product_id"], name: "index_work_orders_on_product_id"
     t.index ["status"], name: "index_work_orders_on_status"
+    t.index ["tenant_id"], name: "index_work_orders_on_tenant_id"
     t.index ["work_order_code"], name: "index_work_orders_on_work_order_code", unique: true
   end
 
@@ -195,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
 
   add_foreign_key "defect_records", "defect_codes"
   add_foreign_key "defect_records", "production_results"
+  add_foreign_key "defect_records", "tenants"
   add_foreign_key "equipments", "manufacturing_processes"
   add_foreign_key "equipments", "tenants"
   add_foreign_key "inspection_items", "inspection_results"
@@ -204,12 +211,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_233002) do
   add_foreign_key "manufacturing_processes", "tenants"
   add_foreign_key "production_results", "equipments"
   add_foreign_key "production_results", "manufacturing_processes"
+  add_foreign_key "production_results", "tenants"
   add_foreign_key "production_results", "work_orders"
   add_foreign_key "production_results", "workers"
   add_foreign_key "products", "tenants"
   add_foreign_key "sessions", "users"
   add_foreign_key "users", "tenants"
   add_foreign_key "work_orders", "products"
+  add_foreign_key "work_orders", "tenants"
   add_foreign_key "workers", "manufacturing_processes"
   add_foreign_key "workers", "tenants"
 end
