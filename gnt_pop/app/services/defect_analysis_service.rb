@@ -1,15 +1,19 @@
 class DefectAnalysisService
-  def initialize(from, to)
+  # @param tenant [Tenant] 대상 테넌트 (필수, 멀티테넌시 격리)
+  # @param from [Date] 분석 시작일
+  # @param to [Date] 분석 종료일
+  def initialize(tenant:, from:, to:)
+    @tenant = tenant
     @from = from
     @to = to
-    @results = ProductionResult.where(created_at: @from.beginning_of_day..@to.end_of_day)
+    @results = ProductionResult.for_tenant(@tenant).where(created_at: @from.beginning_of_day..@to.end_of_day)
   end
 
   def summary
     total_good = @results.sum(:good_qty)
     total_defect = @results.sum(:defect_qty)
     total = total_good + total_defect
-    inspection_count = InspectionResult.where(insp_date: @from..@to).count
+    inspection_count = InspectionResult.for_tenant(@tenant).where(insp_date: @from..@to).count
 
     {
       total_production: total,
@@ -21,7 +25,7 @@ class DefectAnalysisService
   end
 
   def pareto_by_defect_code
-    DefectRecord
+    DefectRecord.for_tenant(@tenant)
       .joins(:production_result, :defect_code)
       .where(production_results: { created_at: @from.beginning_of_day..@to.end_of_day })
       .group("defect_codes.name")

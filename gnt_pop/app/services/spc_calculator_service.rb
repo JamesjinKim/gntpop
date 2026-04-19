@@ -4,11 +4,13 @@ class SpcCalculatorService
   D3 = 0.0
   D4 = 2.114
 
-  def initialize(item_name, from, to)
+  # @param tenant [Tenant] 대상 테넌트 (필수, 멀티테넌시 격리)
+  def initialize(tenant:, item_name:, from:, to:)
+    @tenant = tenant
     @item_name = item_name
     @from = from
     @to = to
-    @items = InspectionItem
+    @items = InspectionItem.for_tenant(@tenant)
       .joins(:inspection_result)
       .where(item_name: item_name)
       .where(inspection_results: { insp_date: from..to })

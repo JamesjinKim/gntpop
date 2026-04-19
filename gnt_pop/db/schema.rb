@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_19_235003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,8 +20,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
     t.text "description"
     t.boolean "is_active", default: true
     t.string "name", null: false
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_defect_codes_on_code", unique: true
+    t.index ["tenant_id"], name: "index_defect_codes_on_tenant_id"
   end
 
   create_table "defect_records", force: :cascade do |t|
@@ -59,9 +61,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
     t.integer "judgment"
     t.decimal "measured_value"
     t.string "spec_value"
+    t.bigint "tenant_id", null: false
     t.string "unit"
     t.datetime "updated_at", null: false
     t.index ["inspection_result_id"], name: "index_inspection_items_on_inspection_result_id"
+    t.index ["tenant_id"], name: "index_inspection_items_on_tenant_id"
   end
 
   create_table "inspection_results", force: :cascade do |t|
@@ -72,9 +76,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
     t.integer "manufacturing_process_id", null: false
     t.text "notes"
     t.integer "result"
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.integer "worker_id", null: false
     t.index ["manufacturing_process_id"], name: "index_inspection_results_on_manufacturing_process_id"
+    t.index ["tenant_id"], name: "index_inspection_results_on_tenant_id"
     t.index ["worker_id"], name: "index_inspection_results_on_worker_id"
   end
 
@@ -86,10 +92,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
     t.jsonb "sensor_data", default: {}
     t.string "snapshot_type"
     t.jsonb "statistics", default: {}
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_lot_sensor_snapshots_on_created_at"
     t.index ["lot_no", "snapshot_type"], name: "index_lot_sensor_snapshots_on_lot_no_and_snapshot_type"
     t.index ["production_result_id"], name: "index_lot_sensor_snapshots_on_production_result_id"
+    t.index ["tenant_id"], name: "index_lot_sensor_snapshots_on_tenant_id"
   end
 
   create_table "manufacturing_processes", force: :cascade do |t|
@@ -199,15 +207,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_234002) do
     t.index ["tenant_id"], name: "index_workers_on_tenant_id"
   end
 
+  add_foreign_key "defect_codes", "tenants"
   add_foreign_key "defect_records", "defect_codes"
   add_foreign_key "defect_records", "production_results"
   add_foreign_key "defect_records", "tenants"
   add_foreign_key "equipments", "manufacturing_processes"
   add_foreign_key "equipments", "tenants"
   add_foreign_key "inspection_items", "inspection_results"
+  add_foreign_key "inspection_items", "tenants"
   add_foreign_key "inspection_results", "manufacturing_processes"
+  add_foreign_key "inspection_results", "tenants"
   add_foreign_key "inspection_results", "workers"
   add_foreign_key "lot_sensor_snapshots", "production_results"
+  add_foreign_key "lot_sensor_snapshots", "tenants"
   add_foreign_key "manufacturing_processes", "tenants"
   add_foreign_key "production_results", "equipments"
   add_foreign_key "production_results", "manufacturing_processes"

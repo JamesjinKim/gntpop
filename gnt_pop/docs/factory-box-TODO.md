@@ -19,7 +19,7 @@
 - [x] `gnt-v1-final` 태그 부착 → 커밋 `6f3b854` (GnT v1 마지막 버그수정)
 - [x] ~~`factory-box-main` 브랜치 생성~~ → **옵션 A 채택**: 단일 브랜치(`main`)에서 계속 진행. 1인 프로젝트 YAGNI. GnT v1 복귀는 `gnt-v1-final` 태그로 가능
 
-## Sprint 1 — 멀티테넌시(다중임대) 최소 구현 (진행률 ~90%, Wave 2 완료)
+## Sprint 1 — 멀티테넌시(다중임대) 최소 구현 (진행률 **100%**, Wave 3 완료)
 - [x] `Tenant` 모델 + 마이그레이션 (code unique, name, active) — 2026-04-19
 - [x] GnT 기본 테넌트 시드 (id=1, code: "gnt", name: "주식회사 지앤티")
 - [x] 1차: `Product`에 `tenant_id` + **명시적 `for_tenant` scope** + callback
@@ -32,7 +32,14 @@
   - `EquipmentStatusService.new(tenant:)` + summary/filtered_list 스코핑
   - DashboardController, Monitoring::ProductionBoard/EquipmentStatus 컨트롤러에서 Current.tenant 전달
   - **발견 경위**: ACME 로그인 시 대시보드에 GnT 데이터 섞여 보임 → Wave 1/2에서 컨트롤러만 수정하고 Service Objects 누락했던 갭 보완
-- [ ] Wave 3 (나머지 4개): `DefectCode`, `InspectionResult`, `InspectionItem`, `LotSensorSnapshot`
+- [x] **Wave 3 완료 (2026-04-20)**: `DefectCode`, `InspectionResult`, `InspectionItem`, `LotSensorSnapshot`
+  - DefectCode: 테넌트별 분리 + code uniqueness scope: :tenant_id
+  - InspectionResult: Current.tenant callback
+  - InspectionItem: parent(InspectionResult) 상속
+  - LotSensorSnapshot: parent(ProductionResult) 상속
+  - Quality 서비스(`DefectAnalysisService`, `SpcCalculatorService`) tenant 파라미터화
+  - Quality 3개 컨트롤러(Inspections/DefectAnalysis/Spc) + DefectCodes + ProductionResults DefectCode form 옵션 스코핑
+  - **발견 경위**: ACME 로그인 시 검사결과 섞여 보임
 - [x] `User`에 tenant_id, `Current.tenant` 세팅 (ApplicationController before_action)
 - [!] acts_as_tenant gem 도입 여부 — Wave 2 완료 시점 재평가: 패턴 단순 반복으로 **수동 유지 계속** 판단. Wave 3 완료 후 최종
 

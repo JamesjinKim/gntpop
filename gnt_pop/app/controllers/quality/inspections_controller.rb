@@ -2,7 +2,8 @@ class Quality::InspectionsController < ApplicationController
   before_action :set_inspection, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @q = InspectionResult.includes(:worker, :manufacturing_process)
+    @q = InspectionResult.for_tenant(Current.tenant)
+                         .includes(:worker, :manufacturing_process)
                          .ransack(params[:q])
     @pagy, @inspections = pagy(@q.result.recent, limit: 20)
   end
@@ -49,7 +50,7 @@ class Quality::InspectionsController < ApplicationController
   private
 
   def set_inspection
-    @inspection = InspectionResult.find(params[:id])
+    @inspection = InspectionResult.for_tenant(Current.tenant).find(params[:id])
   end
 
   def inspection_params
@@ -62,7 +63,8 @@ class Quality::InspectionsController < ApplicationController
   end
 
   def load_form_data
-    @workers = Worker.active.order(:name)
-    @processes = ManufacturingProcess.active.ordered
+    tenant = Current.tenant
+    @workers = Worker.for_tenant(tenant).active.order(:name)
+    @processes = ManufacturingProcess.for_tenant(tenant).active.ordered
   end
 end

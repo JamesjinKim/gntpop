@@ -1,4 +1,5 @@
 class InspectionResult < ApplicationRecord
+  belongs_to :tenant
   belongs_to :worker, optional: true
   belongs_to :manufacturing_process, optional: true
   has_many :inspection_items, dependent: :destroy
@@ -7,19 +8,24 @@ class InspectionResult < ApplicationRecord
   enum :insp_type, { incoming: 0, process: 1, outgoing: 2 }
   enum :result, { pass: 0, fail: 1, conditional: 2 }, prefix: :result
 
+  # Callbacks — 생성 시 Current.tenant 자동 할당
+  before_validation :assign_current_tenant, on: :create
+
   validates :lot_no, presence: true
   validates :insp_type, presence: true
   validates :insp_date, presence: true
 
   scope :recent, -> { order(insp_date: :desc, created_at: :desc) }
   scope :by_period, ->(from, to) { where(insp_date: from..to) if from.present? && to.present? }
+  # 멀티테넌시 격리 — 명시적 호출 필수
+  scope :for_tenant, ->(t) { where(tenant: t) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[lot_no insp_type insp_date result worker_id manufacturing_process_id created_at]
+    %w[lot_no insp_type insp_date result worker_id manufacturing_process_id tenant_id created_at]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[worker manufacturing_process inspection_items]
+    %w[worker manufacturing_process inspection_items tenant]
   end
 
   def insp_type_label
@@ -28,5 +34,11 @@ class InspectionResult < ApplicationRecord
 
   def result_label
     { "pass" => "합격", "fail" => "불합격", "conditional" => "조건부합격" }[result]
+  end
+
+  private
+
+  def assign_current_tenant
+    self.tenant_id ||= Current.tenant&.id
   end
 end

@@ -95,8 +95,7 @@ class Productions::ProductionResultsController < ApplicationController
     @processes = ManufacturingProcess.for_tenant(tenant).active.ordered
     @equipments = Equipment.for_tenant(tenant).active.order(:equipment_code)
     @workers = Worker.for_tenant(tenant).active.order(:name)
-    # DefectCode는 Wave 3에서 tenant_id 적용 예정 (현재 전체 공용)
-    @defect_codes = DefectCode.active.order(:code)
+    @defect_codes = DefectCode.for_tenant(tenant).active.order(:code)
   end
 
   # 불량 기록 저장

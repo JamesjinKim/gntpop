@@ -8,7 +8,7 @@ module Masters
 
     # GET /masters/defect_codes
     def index
-      @q = DefectCode.ransack(params[:q])
+      @q = DefectCode.for_tenant(Current.tenant).ransack(params[:q])
       @pagy, @defect_codes = pagy(@q.result.order(created_at: :desc))
     end
 
@@ -52,7 +52,7 @@ module Masters
     private
 
     def set_defect_code
-      @defect_code = DefectCode.find(params[:id])
+      @defect_code = DefectCode.for_tenant(Current.tenant).find(params[:id])
     end
 
     def defect_code_params

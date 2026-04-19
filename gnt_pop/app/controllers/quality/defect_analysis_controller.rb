@@ -3,7 +3,7 @@ class Quality::DefectAnalysisController < ApplicationController
     @from = params[:from].present? ? Date.parse(params[:from]) : 30.days.ago.to_date
     @to = params[:to].present? ? Date.parse(params[:to]) : Date.current
 
-    service = DefectAnalysisService.new(@from, @to)
+    service = DefectAnalysisService.new(tenant: Current.tenant, from: @from, to: @to)
     @summary = service.summary
     @pareto_data = service.pareto_by_defect_code
     @by_process = service.defect_rate_by_process
